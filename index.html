@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0c0d">
+<title>TravelBug</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%2214%22%20rx%3D%228%22%20ry%3D%228.5%22%20fill%3D%22%23d92d27%22%2F%3E%3Cpath%20d%3D%22M12%205.5v17%22%20stroke%3D%22%230a0a0b%22%20stroke-width%3D%221.2%22%2F%3E%3Cpath%20d%3D%22M6.5%204.5C7.7%202.7%209.7%202%2012%202s4.3.7%205.5%202.5C16.1%205.9%2014.1%206.5%2012%206.5S7.9%205.9%206.5%204.5z%22%20fill%3D%22%230a0a0b%22%2F%3E%3Ccircle%20cx%3D%228.6%22%20cy%3D%2212%22%20r%3D%221.5%22%20fill%3D%22%230a0a0b%22%2F%3E%3Ccircle%20cx%3D%2215.4%22%20cy%3D%2212%22%20r%3D%221.5%22%20fill%3D%22%230a0a0b%22%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%2217.4%22%20r%3D%221.3%22%20fill%3D%22%230a0a0b%22%2F%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2217.4%22%20r%3D%221.3%22%20fill%3D%22%230a0a0b%22%2F%3E%3C%2Fsvg%3E">
+<style>
+:root{
+  /* ===== TravelBug design tokens: monochrome, one tiny red brand mark ===== */
+  --bg:#0c0c0d; --bg2:#121214; --card:#161618; --card2:#1e1e21; --line:#2b2b30;
+  --text:#f4f4f5; --mute:#8b8b93; --on-accent:#0c0c0d;
+  --accent:var(--text); --accent2:#8b8b93; --blue:#a1a1aa; --good:#e4e4e7; --warn:#a1a1aa;
+  --brand:#d92d27; --bug-ink:#0a0a0b; --bad:#e5534b;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI Variable","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --fs-xs:12px; --fs-sm:13px; --fs-base:15px; --fs-lg:20px; --fs-xl:44px;
+  --sp-1:6px; --sp-2:10px; --sp-3:14px; --sp-4:18px; --sp-5:24px;
+  --radius:16px; --radius-sm:12px; --shadow:0 1px 2px rgba(0,0,0,.4);
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+  color-scheme:dark;
+}
+:root[data-theme=light]{
+  --bg:#f5f5f6; --bg2:#ffffff; --card:#ffffff; --card2:#f0f0f2; --line:#e2e2e6;
+  --text:#111113; --mute:#6b6b74; --on-accent:#ffffff;
+  --accent2:#6b6b74; --blue:#52525b; --good:#27272a; --warn:#52525b;
+  --bug-ink:#111113; --bad:#c9372f; --shadow:0 1px 2px rgba(0,0,0,.06);
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:var(--fs-base)/1.45 var(--font)}
+body{min-height:100vh;overflow-x:hidden}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:20px} h3{font-size:15px;color:var(--mute);font-weight:600}
+a{color:var(--accent)} button,input,select,textarea{font:inherit;color:inherit}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* layout */
+.app{display:grid;grid-template-columns:1fr;min-height:100vh}
+.side{display:none}
+.main{padding:0 16px calc(96px + var(--safe-b));max-width:1100px;width:100%;margin:0 auto}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(10px + var(--safe-t)) 0 10px;background:linear-gradient(var(--bg) 80%,transparent)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:650;font-size:18px;letter-spacing:-.02em}
+.logo{width:18px;height:18px;display:grid;place-items:center;color:var(--mute);flex:none}
+.logo svg{width:18px;height:18px;display:block}
+.brand small{display:block;font-weight:500;font-size:11px;color:var(--mute);letter-spacing:0}
+.spacer{flex:1}
+.tripsel{max-width:46vw;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px;min-height:42px}
+.iconbtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--text)}
+.iconbtn.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:99;background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:50% 100%;background-repeat:no-repeat;animation:slide 1s linear infinite;display:none}
+.bar.on{display:block}
+@keyframes slide{from{background-position:-50% 0}to{background-position:150% 0}}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:color-mix(in srgb,var(--bg2) 94%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 6px calc(6px + var(--safe-b))}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;font-size:11px;color:var(--mute);border:0;background:none;border-radius:12px;min-height:50px;cursor:pointer}
+.tab.on{color:var(--accent)}
+.navbtn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:0;background:none;color:var(--mute);width:100%;text-align:left;cursor:pointer;font-weight:600}
+.navbtn.on{background:var(--card);color:var(--accent)}
+@media(min-width:900px){
+  .app{grid-template-columns:230px 1fr}
+  .side{display:block;position:sticky;top:0;height:100vh;padding:22px 14px;border-right:1px solid var(--line);background:var(--bg2)}
+  .side .brand{padding:0 8px 22px}
+  .tabbar{display:none} .main{padding-bottom:40px}
+  .top .brand{display:none}
+}
+
+/* components */
+.page-head{display:flex;align-items:center;gap:10px;margin:8px 0 14px;flex-wrap:wrap}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.card.flat{box-shadow:none}
+.card h3{margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hero{background:var(--card)}
+.big{font-size:var(--fs-xl);font-weight:800;letter-spacing:-.03em;line-height:1}
+.mute{color:var(--mute)} .sm{font-size:13px} .xs{font-size:12px}
+.row{display:flex;align-items:center;gap:10px} .wrap{flex-wrap:wrap} .between{justify-content:space-between}
+.stack>*+*{margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:13px;border:1px solid var(--line);background:var(--card2);cursor:pointer;font-weight:600;text-decoration:none;color:var(--text)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.danger{color:var(--bad)} .btn.sm{min-height:36px;padding:0 12px;font-size:13px;border-radius:11px}
+.btn.ghost{background:none}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--card2);color:var(--mute);white-space:nowrap}
+.badge.good{background:var(--text);color:var(--on-accent)} .badge.warn{background:var(--card2);color:var(--text);box-shadow:inset 0 0 0 1px var(--mute)}
+.badge.bad{background:var(--card2);color:var(--bad)} .badge.info{background:var(--card2);color:var(--text)}
+.progress{height:10px;border-radius:99px;background:var(--card2);overflow:hidden;position:relative}
+.progress>i{display:block;height:100%;border-radius:99px;background:var(--text)}
+.progress.over>i{background:var(--bad)}
+.progress .mark{position:absolute;top:0;bottom:0;width:2px;background:var(--bg)}
+.list>*{border-top:1px solid var(--line);padding:12px 0}
+.list>*:first-child{border-top:0;padding-top:0} .list>*:last-child{padding-bottom:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip{flex:none;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:13px;font-weight:600;color:var(--mute)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filters input,.filters select{flex:1;min-width:130px}
+input,select,textarea{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-height:44px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:84px;resize:vertical}
+label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin-bottom:5px}
+.field{margin-bottom:12px} .field.hidden{display:none}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px} .fgrid .full{grid-column:1/-1}
+@media(max-width:480px){.fgrid{grid-template-columns:1fr}}
+.empty{text-align:center;color:var(--mute);padding:34px 10px}
+.stat{display:flex;flex-direction:column}
+.stat b{font-size:22px;letter-spacing:-.02em}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px}
+.bars .br{display:grid;grid-template-columns:110px 1fr 76px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.bars .progress{height:8px}
+.route{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:4px 0 8px}
+.stop{flex:none;text-align:center;padding:10px 14px;border-radius:14px;background:var(--card2);border:1px solid var(--line);min-width:96px}
+.arrow{color:var(--mute);flex:none}
+.day{padding:0;overflow:hidden}
+.day-h{padding:14px 16px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line)}
+.daynum{width:50px;height:50px;border-radius:14px;background:var(--card2);display:grid;place-items:center;text-align:center;line-height:1.05;flex:none}
+.daynum b{font-size:18px;display:block} .daynum span{font-size:10px;color:var(--mute);text-transform:uppercase}
+.day.travel .daynum{background:var(--text);color:var(--on-accent)} .day.travel{border-color:var(--mute)}
+.day.today{border-color:var(--accent)}
+.day-b{padding:6px 16px 14px}
+details.act{border-top:1px solid var(--line);padding:2px 0}
+details.act:first-child{border-top:0}
+details.act summary{list-style:none;display:flex;gap:10px;align-items:center;padding:12px 0;cursor:pointer;min-height:44px}
+details.act summary::-webkit-details-marker{display:none}
+.time{width:46px;flex:none;color:var(--accent);font-weight:700;font-size:13px}
+.det{padding:0 0 12px 56px} .det p{margin:4px 0}
+.tl{position:relative;padding-left:20px;border-left:2px solid var(--line);margin-left:6px}
+.tl .ev{position:relative;padding:0 0 16px 10px}
+.tl .ev:before{content:"";position:absolute;left:-27px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{text-align:center;font-size:11px;color:var(--mute);padding:4px 0}
+.cal .cell{aspect-ratio:1;min-height:46px;border-radius:12px;background:var(--card);border:1px solid var(--line);padding:5px;font-size:12px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;text-align:left;color:var(--text)}
+.cal .cell.out{opacity:.35} .cal .cell.trip{background:var(--card2)} .cal .cell.today{border-color:var(--accent)} .cal .cell.sel{outline:2px solid var(--blue)}
+.cal .cell i{font-style:normal;font-size:10px;color:var(--accent);font-weight:700}
+.chk{width:30px;height:30px;border-radius:10px;border:2px solid var(--line);background:none;display:grid;place-items:center;cursor:pointer;flex:none;color:var(--on-accent)}
+.chk.on{background:var(--good);border-color:var(--good)}
+.done{opacity:.55;text-decoration:line-through}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em}
+.ref{background:var(--bg2);border:1px dashed var(--line);border-radius:10px;padding:6px 10px;display:inline-flex;gap:8px;align-items:center}
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(3,6,14,.7);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:22px 22px 0 0;width:100%;max-width:640px;max-height:92vh;overflow:auto;padding:18px 18px calc(18px + var(--safe-b))}
+@media(min-width:700px){.scrim{align-items:center}.modal{border-radius:22px}}
+.modal h2{margin-bottom:14px}
+.sheetlist .navbtn{border:1px solid var(--line);margin-bottom:8px;background:var(--card2)}
+.toasts{position:fixed;left:12px;right:12px;bottom:calc(80px + var(--safe-b));z-index:80;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+@media(min-width:900px){.toasts{bottom:24px}}
+.toast{pointer-events:auto;background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--text);padding:12px 16px;border-radius:14px;box-shadow:var(--shadow);max-width:520px;animation:pop .2s}
+.toast.err{border-left-color:var(--bad)}
+@keyframes pop{from{transform:translateY(8px);opacity:0}}
+.skeleton{height:120px;border-radius:var(--radius);background:linear-gradient(90deg,var(--card),var(--card2),var(--card));background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+table.t{width:100%;border-collapse:collapse;font-size:14px} table.t td,table.t th{padding:8px 6px;text-align:left;border-top:1px solid var(--line)}
+</style>
+<script>
+(function(){
+  /* Diagnostic: find the first line of any inline script that fails to parse. */
+  function probe(){
+    var out=[], ss=document.scripts, i, t, lines, n, msg, k;
+    for(i=0;i<ss.length;i++){
+      t=ss[i].textContent; if(!t || t.length<2000) continue;
+      lines=t.split('\n');
+      out.push('script '+(i+1)+': '+t.length+' chars, '+lines.length+' lines');
+      for(n=1;n<=lines.length;n++){
+        try{ new Function(lines.slice(0,n).join('\n')); }
+        catch(e){
+          msg=String(e.message);
+          if(!/Unexpected identifier/.test(msg)) continue;
+          out.push('first hard error at line '+n+': '+msg);
+          for(k=Math.max(0,n-3);k<n;k++) out.push((k+1)+': '+lines[k].slice(0,200));
+          break;
+        }
+      }
+    }
+    return out.join('\n');
+  }
+  function show(msg){
+    var v=document.getElementById('view'), d='';
+    try{ d=probe(); }catch(x){ d='probe failed: '+x.message; }
+    if(v){
+      v.innerHTML='<div class="card"><b>TravelBug hit a problem</b><div class="sm mute" style="margin-top:8px;word-break:break-word"></div><pre class="xs mute" style="white-space:pre-wrap;word-break:break-all;margin:8px 0 0"></pre></div>';
+      v.querySelector('div.sm').textContent=String(msg); v.querySelector('pre').textContent=d;
+    }
+  }
+  window.addEventListener('error',function(e){show(e.message);});
+  window.addEventListener('unhandledrejection',function(e){show(e.reason&&e.reason.message||e.reason);});
+})();
+</script>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo" data-logo></div><div>TravelBug<small>Trip planner</small></div></div>
+    <nav id="sidenav"></nav>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <div class="brand"><div class="logo" data-logo></div><div>TravelBug</div></div>
+      <div class="spacer"></div>
+      <select class="tripsel" id="tripsel" aria-label="Select trip"></select>
+      <button class="iconbtn" id="theme" data-act="theme" aria-label="Toggle light or dark mode"></button>
+      <button class="iconbtn" id="refresh" data-act="refresh" aria-label="Refresh data"></button>
+    </header>
+    <div id="syncnote" class="xs mute" style="margin:-4px 0 8px"></div>
+    <main id="view"><div class="grid g2"><div class="skeleton"></div><div class="skeleton"></div></div></main>
+  </div>
+</div>
+<nav class="tabbar" id="tabbar"></nav>
+<div class="toasts" id="toasts"></div>
+<div id="modalroot"></div>
+
+<script>
+/* ============================================================
+   TravelBug frontend. All data comes from the server via
+   google.script.run; the Google Sheet remains the source of truth.
+   ============================================================ */
+const S = { schema:null, trips:[], tripId:'', data:{}, page:'dashboard', f:{}, user:'', loadedAt:'', cached:false, busy:0,
+            itinView:'days', calMonth:'', calDay:'' };
+const ICONS = {
+  home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+  itinerary:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  destinations:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  explore:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  budget:'<path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16" cy="14" r="1"/>',
+  bookings:'<path d="M3 9a2 2 0 0 0 0-0V6h18v3a2 2 0 0 0 0 6v3H3v-3a2 2 0 0 0 0-6z"/><path d="M14 6v12" stroke-dasharray="2 2"/>',
+  tasks:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/>',
+  trips:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+  more:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
+  refresh:'<path d="M20 11a8 8 0 0 0-14.5-4M4 4v4h4M4 13a8 8 0 0 0 14.5 4M20 20v-4h-4"/>',
+  moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>', sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', check:'<path d="M5 12l5 5 9-10"/>', edit:'<path d="M4 20h4l11-11-4-4L4 16z"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>', link:'<path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>', arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'
+};
+const ico = (n,cls) => `<svg class="i ${cls||''}" viewBox="0 0 24 24">${ICONS[n]||''}</svg>`;
+const NAV = [['dashboard','Home','home'],['itinerary','Itinerary','itinerary'],['destinations','Destinations','destinations'],['explore','Explore','explore'],
+             ['budget','Budget','budget'],['bookings','Bookings','bookings'],['tasks','Tasks','tasks'],['trips','Trips','trips']];
+const TAB_MAIN = ['dashboard','itinerary','bookings','tasks'];
+const IDCOL = {Trips:'TripID',Destinations:'DestinationID',Itinerary:'ItineraryID',Places:'PlaceID',Bookings:'BookingID',Expenses:'ExpenseID',Tasks:'TaskID',ExchangeRates:'RateID'};
+const TRANSPORT_CATS = ['Flights','Trains','Buses','Transfers'];
+const BOOKING_TO_BUDGET = {Flights:'Flights',Accommodation:'Accommodation',Trains:'Transport',Buses:'Transport',Transfers:'Transport',Tours:'Activities',Activities:'Activities',Other:'Other'};
+const ITEM_TO_BUDGET = {Meal:'Food and drinks',Transport:'Transport',Accommodation:'Accommodation',Activity:'Activities'};
+
+/* ---------- theme ---------- */
+function curTheme(){ const t = store('tb_theme'); return t || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); }
+function applyTheme(){ const t = curTheme(); document.documentElement.dataset.theme = t; const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = t === 'light' ? '#f5f5f6' : '#0c0c0d'; }
+
+/* ---------- helpers ---------- */
+const $ = (s,el) => (el||document).querySelector(s);
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = u => /^https?:\/\/\S+$/i.test(u || '') ? u : '';
+const pad = n => String(n).padStart(2,'0');
+const parseD = s => { const [y,m,d] = s.split('-').map(Number); return new Date(Date.UTC(y,m-1,d)); };
+const ymd = d => d.toISOString().slice(0,10);
+const addDays = (s,n) => ymd(new Date(parseD(s).getTime() + n*864e5));
+const diffDays = (a,b) => Math.round((parseD(b) - parseD(a)) / 864e5);
+const todayStr = () => { const n = new Date(); return `${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`; };
+const fmtDate = (s,o) => s ? parseD(s).toLocaleDateString('en-AU', Object.assign({weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}, o||{})) : '';
+const fmtShort = s => fmtDate(s,{weekday:undefined,year:undefined});
+const aud = n => (n == null || isNaN(n)) ? '–' : new Intl.NumberFormat('en-AU',{style:'currency',currency:'AUD',maximumFractionDigits:0}).format(n);
+const num = (n,cur) => n === '' || n == null ? '' : new Intl.NumberFormat('en-AU',{maximumFractionDigits:2}).format(n) + (cur ? ' ' + cur : '');
+const label = n => n.replace(/ID$/,'').replace(/AUD$/,' (AUD)').replace(/Mins$/,' (mins)').replace(/Url$/,' link').replace(/([a-z])([A-Z])/g,'$1 $2').trim();
+const cap = (arr,n) => arr.slice(0,n);
+const sum = (arr,f) => arr.reduce((a,x) => a + (Number(f(x)) || 0), 0);
+const BADGE = {Booked:'good',Done:'good','Paid in full':'good',Completed:'good',Confirmed:'good',Underway:'info',Planned:'info',Shortlisted:'info','In progress':'info','Deposit paid':'warn',Provisional:'warn',
+               Unpaid:'warn',Researching:'',Interested:'',Cancelled:'bad',Skipped:'bad',High:'bad',Medium:'warn',Low:'',Refunded:'info','Added to itinerary':'good',Archived:''};
+const badge = t => t ? `<span class="badge ${BADGE[t] || ''}">${esc(t)}</span>` : '';
+
+function tripObj(){ return S.trips.find(t => t.TripID === S.tripId) || null; }
+function rec(tab,id){ return (tab === 'Trips' ? S.trips : S.data[tab] || []).find(r => r[IDCOL[tab]] === id); }
+function destName(id){ const d = rec('Destinations',id); return d ? d.Name : ''; }
+function sorted(arr,key){ return arr.slice().sort((a,b) => String(a[key]||'~').localeCompare(String(b[key]||'~'))); }
+function phase(){
+  const t = tripObj(); if (!t || !t.StartDate || !t.EndDate) return 'upcoming';
+  const d = todayStr(); return d < t.StartDate ? 'upcoming' : d <= t.EndDate ? 'underway' : 'completed';
+}
+function dests(){ return S.data.Destinations.slice().sort((a,b) => (Number(a.SortOrder)||999) - (Number(b.SortOrder)||999) || String(a.ArrivalDate||'~').localeCompare(String(b.ArrivalDate||'~'))); }
+function nights(d){ return d.ArrivalDate && d.DepartureDate ? Math.max(0,diffDays(d.ArrivalDate,d.DepartureDate)) : null; }
+
+/* exchange rates: latest entry per currency for this trip; AUD = 1 */
+function rate(cur){
+  if (!cur || cur === 'AUD') return 1;
+  let best = null;
+  S.data.ExchangeRates.forEach(r => { if (r.Currency === cur && Number(r.RateToAUD) > 0 && (!best || String(r.EffectiveDate) >= String(best.EffectiveDate))) best = r; });
+  return best ? Number(best.RateToAUD) : null;
+}
+let missingFx = 0;
+function toAud(amount,cur,snapshot){
+  if (amount === '' || amount == null) return 0;
+  if (snapshot !== '' && snapshot != null && !isNaN(snapshot)) return Number(snapshot);
+  const r = rate(cur); if (r == null) { missingFx++; return 0; }
+  return Number(amount) * r;
+}
+
+/* ---------- server calls ---------- */
+/* Two ways to reach the Google Sheet backend:
+   1. Inside an Apps Script web app page: google.script.run.
+   2. From any other host (GitHub Pages etc.): an anonymous POST to the Apps Script /exec address.
+   Way 2 sends no Google cookies, so browser Google accounts (work/school) cannot get in the way. */
+const IN_GAS = typeof google !== 'undefined' && !!google.script && !!google.script.run;
+function call(fn,...args){
+  if (IN_GAS) {
+    return new Promise((res,rej) => {
+      google.script.run.withSuccessHandler(res).withFailureHandler(e => rej(e)) [fn](...args);
+    });
+  }
+  const url = store('tb_api') || '';
+  if (!url) return Promise.reject(new Error('NO_API'));
+  return fetch(url, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({fn:fn, args:args}) })
+    .then(r => r.json())
+    .then(j => { if (!j.ok) throw new Error(j.error || 'Server error'); return j.result; });
+}
+function showApiSetup(note){
+  $('#view').innerHTML = `<div class="card stack" style="max-width:560px"><h2>Connect to your TravelBug data</h2>
+    <p class="sm mute">Paste your Apps Script web app address (the long link ending in <b>/exec</b>). You only need to do this once on each device.</p>
+    ${note ? `<p class="sm" style="color:var(--bad)">${esc(note)}</p>` : ''}
+    <input id="apiurl" type="url" inputmode="url" placeholder="Paste the /exec link here" value="${esc(store('tb_api') || '')}">
+    <button class="btn pri" data-act="saveApi">Connect</button></div>`;
+}
+function busy(on){ S.busy += on ? 1 : -1; $('#bar').classList.toggle('on', S.busy > 0); $('#refresh').classList.toggle('spin', S.busy > 0); }
+function errMsg(e){
+  const m = String(e && e.message || e || 'Something went wrong').replace(/^Error:\s*/,'');
+  return m.replace(/^(VALIDATION|CONFLICT|NOT_FOUND|NOT_AUTHORISED):\s*/,'');
+}
+function toast(msg,err){
+  const el = document.createElement('div'); el.className = 'toast' + (err ? ' err' : ''); el.textContent = msg;
+  $('#toasts').appendChild(el); setTimeout(() => el.remove(), err ? 6000 : 2600);
+}
+function store(k,v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k,v); } catch(e){ return null; } }
+
+async function loadAll(tripId, quiet){
+  busy(true);
+  try {
+    const r = await call('apiBootstrap', tripId || S.tripId || store('tb_trip') || '');
+    applyBootstrap(r, false);
+    store('tb_cache', JSON.stringify(r)); store('tb_trip', r.tripId);
+    if (!quiet) toast('Up to date');
+  } catch(e){
+    if (String(e && e.message).includes('NO_API')) { showApiSetup(); return; }
+    toast(errMsg(e), true);
+    if (!IN_GAS && /Failed to fetch|NetworkError|Load failed/i.test(String(e && e.message))) { showApiSetup('Could not reach that address. Check the link, and that the web app is deployed with access set to Anyone.'); return; }
+    if (!S.schema) $('#view').innerHTML = '<div class="card empty"><h2>Could not load your trip data</h2><p class="sm">' + esc(errMsg(e)) + '</p><button class="btn pri" data-act="refresh">Try again</button></div>';
+  } finally { busy(false); }
+}
+function applyBootstrap(r,cached){
+  S.schema = r.schema; S.trips = r.trips; S.tripId = r.tripId; S.data = r.data; S.user = r.user; S.loadedAt = r.loadedAt; S.cached = cached;
+  S.calMonth = ''; renderChrome(); render();
+}
+
+/* conflict-aware save/delete wrappers */
+async function saveRecord(tab,r,version){
+  busy(true);
+  try {
+    const saved = await call('apiSave', tab, r, version);
+    const arr = tab === 'Trips' ? S.trips : S.data[tab], id = IDCOL[tab], i = arr.findIndex(x => x[id] === saved[id]);
+    if (i >= 0) arr[i] = saved; else arr.push(saved);
+    return saved;
+  } catch(e){
+    if (/CONFLICT|NOT_FOUND/.test(String(e.message))) { toast(errMsg(e) + ' Reloading latest data.', true); await loadAll(S.tripId, true); }
+    throw e;
+  } finally { busy(false); }
+}
+async function deleteRecord(tab,id){
+  const r = rec(tab,id); if (!r) return;
+  busy(true);
+  try {
+    await call('apiDelete', tab, id, r.Version);
+    if (tab === 'Trips' || tab === 'Destinations') await loadAll(tab === 'Trips' && id === S.tripId ? '' : S.tripId, true);
+    else { S.data[tab] = S.data[tab].filter(x => x[IDCOL[tab]] !== id); }
+    toast('Deleted');
+  } catch(e){
+    toast(errMsg(e), true);
+    if (/CONFLICT|NOT_FOUND/.test(String(e.message))) await loadAll(S.tripId, true);
+  } finally { busy(false); render(); }
+}
+
+/* ---------- dialogs ---------- */
+function closeModal(){ $('#modalroot').innerHTML = ''; }
+function showModal(html){
+  $('#modalroot').innerHTML = `<div class="scrim" data-act="scrim"><div class="modal" role="dialog">${html}</div></div>`;
+}
+function confirmDlg(title,body,okLabel){
+  return new Promise(res => {
+    showModal(`<h2>${esc(title)}</h2><p class="mute">${esc(body)}</p><div class="row" style="margin-top:16px"><button class="btn ghost" id="cn" style="flex:1">Cancel</button><button class="btn danger" id="ok" style="flex:1">${esc(okLabel||'Delete')}</button></div>`);
+    $('#cn').onclick = () => { closeModal(); res(false); }; $('#ok').onclick = () => { closeModal(); res(true); };
+  });
+}
+
+/* ---------- generic record form (driven by the server schema) ---------- */
+const HIDE_FIELDS = new Set(['TripID','CreatedAt','UpdatedAt','UpdatedBy','Version','CompletedAt','CostAUD','AmountAUD']);
+function fkOptions(ref){
+  if (ref === 'Destinations') return dests().map(d => [d.DestinationID, d.Name]);
+  if (ref === 'Bookings') return sorted(S.data.Bookings,'StartDate').map(b => [b.BookingID, `${b.Description}${b.StartDate ? ' · ' + fmtShort(b.StartDate) : ''}`]);
+  if (ref === 'Places') return S.data.Places.map(p => [p.PlaceID, p.Name]);
+  return [];
+}
+function openForm(tab, existing, defaults, onSaved){
+  const cols = S.schema[tab].columns.filter(c => c.name !== IDCOL[tab] && !HIDE_FIELDS.has(c.name));
+  const t = tripObj(), v = Object.assign({}, defaults || {}, existing || {});
+  if (!existing && t) { if (cols.some(c => c.name === 'Currency') && !v.Currency) v.Currency = t.Currency || 'AUD'; }
+  const full = new Set(['Notes','Description','TransportNotes','Title','Name','TripName','MapsUrl','WebsiteUrl','ConfirmationUrl']);
+  const fields = cols.map(c => {
+    const val = v[c.name] == null ? '' : v[c.name], id = 'f_' + c.name, req = c.required ? ' *' : '';
+    let inp;
+    if (c.type === 'longtext') inp = `<textarea id="${id}" maxlength="5000">${esc(val)}</textarea>`;
+    else if (c.type === 'enum') inp = `<select id="${id}"><option value=""></option>${c.enums.map(o => `<option ${o === val ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+    else if (c.type === 'fk') inp = `<select id="${id}"><option value=""></option>${fkOptions(c.ref).map(o => `<option value="${esc(o[0])}" ${o[0] === val ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select>`;
+    else if (c.type === 'date') inp = `<input id="${id}" type="date" value="${esc(val)}">`;
+    else if (c.type === 'time') inp = `<input id="${id}" type="time" value="${esc(val)}">`;
+    else if (c.type === 'money') inp = `<input id="${id}" type="number" inputmode="decimal" step="any" ${c.allowNegative ? '' : 'min="0"'} value="${esc(val)}">`;
+    else if (c.type === 'fx') inp = `<input id="${id}" type="number" inputmode="decimal" step="any" min="0" value="${esc(val)}" placeholder="auto">`;
+    else if (c.type === 'int') inp = `<input id="${id}" type="number" inputmode="numeric" step="1" min="0" value="${esc(val)}">`;
+    else if (c.type === 'url') inp = `<input id="${id}" type="url" inputmode="url" placeholder="https:&#47;&#47;" value="${esc(val)}">`;
+    else inp = `<input id="${id}" type="text" maxlength="500" value="${esc(val)}">`;
+    const lbl = c.name === 'FxRate' ? 'Exchange rate to AUD (blank = automatic)' : c.name === 'RateToAUD' ? 'AUD per 1 unit of currency' : label(c.name);
+    return `<div class="field ${full.has(c.name) || c.type === 'longtext' ? 'full' : ''}" data-f="${c.name}"><label for="${id}">${esc(lbl)}${req}</label>${inp}</div>`;
+  }).join('');
+  showModal(`<h2>${existing ? 'Edit' : 'Add'} ${esc(tabLabel(tab))}</h2><form id="rf" novalidate><div class="fgrid">${fields}</div>
+    <div class="row" style="margin-top:8px"><button type="button" class="btn ghost" id="fc" style="flex:1">Cancel</button><button class="btn pri" id="fs" style="flex:2">Save</button></div></form>`);
+  const sync = () => {
+    if (tab !== 'Itinerary') return;
+    const isT = $('#f_ItemType').value === 'Transport';
+    ['FromDestinationID','ToDestinationID','TransportType'].forEach(n => $(`[data-f="${n}"]`).classList.toggle('hidden', !isT));
+  };
+  if (tab === 'Itinerary') { $('#f_ItemType').addEventListener('change', sync); sync(); }
+  $('#fc').onclick = closeModal;
+  $('#rf').onsubmit = async ev => {
+    ev.preventDefault();
+    const out = {}; let bad = '';
+    cols.forEach(c => {
+      const el = $('#f_' + c.name); if (!el) return;
+      const hidden = el.closest('.field').classList.contains('hidden');
+      out[c.name] = hidden ? '' : el.value.trim();
+      if (c.required && !out[c.name] && !bad) bad = label(c.name) + ' is required';
+    });
+    if (bad) return toast(bad, true);
+    if (tab !== 'Trips') out.TripID = S.tripId;
+    if (existing) out[IDCOL[tab]] = existing[IDCOL[tab]];
+    $('#fs').disabled = true;
+    try {
+      const saved = await saveRecord(tab, out, existing ? existing.Version : undefined);
+      closeModal(); toast(existing ? 'Saved' : 'Added');
+      if (onSaved) await onSaved(saved);
+      if (tab === 'Trips' && !existing) await loadAll(saved.TripID, true);
+      render(); renderChrome();
+    } catch(e){ toast(errMsg(e), true); $('#fs') && ($('#fs').disabled = false); }
+  };
+}
+function tabLabel(tab){ return ({ExchangeRates:'exchange rate',Itinerary:'activity',Places:'place',Destinations:'destination',Trips:'trip',Bookings:'booking',Expenses:'expense',Tasks:'task'})[tab] || tab; }
+
+/* ---------- chrome ---------- */
+function renderChrome(){
+  document.querySelectorAll('[data-logo]').forEach(el => el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.2L8 1M14.5 3.2L16 1" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/><ellipse cx="12" cy="14" rx="8" ry="8.5" fill="var(--brand)"/><path d="M6.5 4.8C7.7 3 9.7 2.3 12 2.3s4.3.7 5.5 2.5C16.1 6.2 14.1 6.8 12 6.8S7.9 6.2 6.5 4.8z" fill="var(--bug-ink)"/><path d="M12 6.8v15.5" stroke="var(--bug-ink)" stroke-width="1.2"/><g fill="var(--bug-ink)"><circle cx="8.6" cy="12" r="1.5"/><circle cx="15.4" cy="12" r="1.5"/><circle cx="9" cy="17.4" r="1.3"/><circle cx="15" cy="17.4" r="1.3"/></g></svg>');
+  $('#refresh').innerHTML = ico('refresh');
+  $('#theme').innerHTML = ico(curTheme() === 'light' ? 'moon' : 'sun');
+  const sel = $('#tripsel');
+  sel.innerHTML = S.trips.map(t => `<option value="${esc(t.TripID)}" ${t.TripID === S.tripId ? 'selected' : ''}>${esc(t.TripName)}${t.Status === 'Archived' ? ' (archived)' : ''}</option>`).join('') || '<option>No trips</option>';
+  $('#sidenav').innerHTML = NAV.map(n => `<button class="navbtn ${S.page === n[0] ? 'on' : ''}" data-act="nav" data-page="${n[0]}">${ico(n[2])}${n[1]}</button>`).join('');
+  $('#tabbar').innerHTML = TAB_MAIN.map(p => { const n = NAV.find(x => x[0] === p); return `<button class="tab ${S.page === p ? 'on' : ''}" data-act="nav" data-page="${p}">${ico(n[2])}${n[1]}</button>`; }).join('')
+    + `<button class="tab ${TAB_MAIN.includes(S.page) ? '' : 'on'}" data-act="more">${ico('more')}More</button>`;
+  const when = S.loadedAt ? new Date(S.loadedAt).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}) : '';
+  $('#syncnote').textContent = S.cached ? 'Showing saved copy – refreshing…' : (when ? `Last refreshed ${when}. Tap refresh to pick up changes made in Google Sheets.` : '');
+}
+function nav(page){ S.page = page; closeModal(); renderChrome(); render(); window.scrollTo(0,0); }
+
+function render(){
+  const v = $('#view'); if (!S.schema) return;
+  const focus = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.filter : null;
+  const caret = focus && document.activeElement.selectionStart;
+  missingFx = 0;
+  const fn = PAGES[S.page] || PAGES.dashboard;
+  if (!tripObj() && S.page !== 'trips') { v.innerHTML = `<div class="card empty"><h2>Welcome to TravelBug</h2><p>Create your first trip to get started.</p><button class="btn pri" data-act="add" data-tab="Trips">${ico('plus')} New trip</button></div>`; return; }
+  v.innerHTML = fn();
+  if (focus) { const el = $(`[data-filter="${focus}"]`); if (el) { el.focus(); try { el.setSelectionRange(caret,caret); } catch(e){} } }
+}
+const head = (title,actions) => `<div class="page-head"><h2>${esc(title)}</h2><div class="spacer"></div>${actions || ''}</div>`;
+const addBtn = (tab,defaults,text) => `<button class="btn pri sm" data-act="add" data-tab="${tab}" ${defaults ? `data-defaults='${esc(JSON.stringify(defaults))}'` : ''}>${ico('plus')} ${esc(text || 'Add')}</button>`;
+const editDel = (tab,id) => `<button class="btn sm ghost" data-act="edit" data-tab="${tab}" data-id="${esc(id)}" aria-label="Edit">${ico('edit')}</button><button class="btn sm ghost danger" data-act="del" data-tab="${tab}" data-id="${esc(id)}" aria-label="Delete">${ico('trash')}</button>`;
+const linkBtn = (u,text) => safeUrl(u) ? `<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${ico('link')} ${esc(text)}</a>` : '';
+const sel = (key,opts,all) => `<select data-filter="${key}"><option value="">${all}</option>${opts.map(o => { const [v,t] = Array.isArray(o) ? o : [o,o]; return `<option value="${esc(v)}" ${S.f[key] === v ? 'selected' : ''}>${esc(t)}</option>`; }).join('')}</select>`;
+const searchBox = ph => `<input data-filter="q" type="search" placeholder="${esc(ph)}" value="${esc(S.f.q || '')}">`;
+const matchQ = (obj,fields) => { const q = (S.f.q || '').toLowerCase(); return !q || fields.some(f => String(obj[f] || '').toLowerCase().includes(q)); };
+
+/* ---------- budget engine (see "How costs are counted" on the Budget page) ---------- */
+function budgetCalc(){
+  const today = todayStr(), ents = [], notes = [];
+  const bookings = S.data.Bookings.filter(b => b.BookingStatus !== 'Cancelled');
+  const exp = S.data.Expenses;
+  const paidFor = id => sum(exp.filter(e => e.BookingID === id), e => toAud(e.Amount,e.Currency,e.AmountAUD));
+  bookings.forEach(b => {
+    const cost = toAud(b.Cost,b.Currency,b.CostAUD), paid = paidFor(b.BookingID), fc = Math.max(cost,paid);
+    ents.push({kind: b.BookingStatus === 'Booked' ? 'committed' : 'planned', amt: fc, cat: BOOKING_TO_BUDGET[b.Category] || 'Other', dest: b.DestinationID, paid, label: b.Description});
+  });
+  const bookingIds = new Set(S.data.Bookings.map(b => b.BookingID));
+  S.data.Itinerary.forEach(it => {
+    if (it.BookingID && bookingIds.has(it.BookingID)) return;
+    if (it.BookingStatus === 'Booked' && false) return;
+    if (it.Date && it.Date < today) return;
+    const amt = toAud(it.EstimatedCost,it.Currency); if (!amt) return;
+    ents.push({kind:'planned', amt, cat: ITEM_TO_BUDGET[it.ItemType] || 'Other', dest: it.DestinationID, label: it.Title});
+  });
+  const onItin = new Set(S.data.Itinerary.map(i => i.PlaceID).filter(Boolean));
+  S.data.Places.forEach(p => {
+    if (p.Status !== 'Shortlisted' || onItin.has(p.PlaceID)) return;
+    const amt = toAud(p.EstimatedCost,p.Currency); if (!amt) return;
+    ents.push({kind:'planned', amt, cat: p.Category === 'Restaurants' || p.Category === 'Cafes' ? 'Food and drinks' : p.Category === 'Shopping' ? 'Shopping' : 'Activities', dest: p.DestinationID, label: p.Name});
+  });
+  exp.filter(e => !e.BookingID || !bookingIds.has(e.BookingID)).forEach(e => ents.push({kind:'direct', amt: toAud(e.Amount,e.Currency,e.AmountAUD), cat: e.Category || 'Other', dest: e.DestinationID, label: e.Description}));
+  const planned = sum(ents.filter(e => e.kind === 'planned'), e => e.amt), committed = sum(ents.filter(e => e.kind === 'committed'), e => e.amt), direct = sum(ents.filter(e => e.kind === 'direct'), e => e.amt);
+  const spentList = exp.map(e => ({amt: toAud(e.Amount,e.Currency,e.AmountAUD), cat: e.Category || (rec('Bookings',e.BookingID) ? BOOKING_TO_BUDGET[rec('Bookings',e.BookingID).Category] : 'Other'), dest: e.DestinationID || (rec('Bookings',e.BookingID)||{}).DestinationID, date: e.Date}));
+  const spent = sum(spentList, x => x.amt), forecast = planned + committed + direct;
+  const paidOnBooked = sum(ents.filter(e => e.kind === 'committed'), e => e.paid || 0);
+  const t = tripObj(), budget = Number(t && t.Budget) || 0;
+  return {ents, spentList, planned, committed, direct, forecast, spent, budget, outstanding: Math.max(0, committed - paidOnBooked), remaining: budget - forecast, cashLeft: budget - spent};
+}
+function groupSum(list,key,val){ const m = {}; list.forEach(x => { const k = key(x) || ''; m[k] = (m[k] || 0) + val(x); }); return m; }
+
+/* ---------- itinerary model ---------- */
+function allEvents(){
+  const evs = S.data.Itinerary.map(i => Object.assign({}, i, {src:'itin'}));
+  S.data.Bookings.filter(b => b.BookingStatus !== 'Cancelled' && TRANSPORT_CATS.includes(b.Category) && b.StartDate)
+    .filter(b => !S.data.Itinerary.some(i => i.BookingID === b.BookingID))
+    .forEach(b => evs.push({src:'booking', ItineraryID:b.BookingID, Date:b.StartDate, StartTime:b.StartTime, EndTime:b.EndTime, Title:`${b.Category.replace(/s$/,'')}: ${b.Description}`, ItemType:'Transport',
+      DestinationID:b.DestinationID, TransportType:b.Category === 'Flights' ? 'Flight' : b.Category === 'Trains' ? 'Train' : b.Category === 'Buses' ? 'Bus' : 'Transfer', BookingID:b.BookingID, BookingStatus:b.BookingStatus, Notes:b.Notes, EstimatedCost:b.Cost, Currency:b.Currency}));
+  return evs;
+}
+const evSort = (a,b) => String(a.Date).localeCompare(String(b.Date)) || (a.StartTime ? (b.StartTime ? a.StartTime.localeCompare(b.StartTime) : -1) : (b.StartTime ? 1 : 0)) || ((Number(a.SortOrder)||0) - (Number(b.SortOrder)||0));
+function destOnDate(date){
+  let hit = null; dests().forEach(d => { if (d.ArrivalDate && d.ArrivalDate <= date && (!d.DepartureDate || date <= d.DepartureDate)) hit = d; }); return hit;
+}
+function lodging(date){
+  const b = S.data.Bookings.find(b => b.Category === 'Accommodation' && b.BookingStatus !== 'Cancelled' && b.StartDate && b.StartDate <= date && (b.EndDate ? date < b.EndDate : date === b.StartDate));
+  if (b) return b.Description + (b.Provider ? ' · ' + b.Provider : '');
+  const d = destOnDate(date); return d && d.Accommodation || '';
+}
+function tripDates(){
+  const t = tripObj(), set = new Set(allEvents().map(e => e.Date).filter(Boolean));
+  if (t && t.StartDate && t.EndDate) for (let d = t.StartDate; d <= t.EndDate && diffDays(t.StartDate,d) < 400; d = addDays(d,1)) set.add(d);
+  return [...set].sort();
+}
+function dayNo(date){ const t = tripObj(); return t && t.StartDate ? diffDays(t.StartDate,date) + 1 : null; }
+function matchDest(ev,date){ const f = S.f.dest; if (!f) return true; return ev.DestinationID === f || ev.ToDestinationID === f || ev.FromDestinationID === f || (!ev.DestinationID && (destOnDate(date)||{}).DestinationID === f); }
+
+function eventRow(ev){
+  const isB = ev.src === 'booking', cost = toAud(ev.EstimatedCost,ev.Currency);
+  const route = ev.ItemType === 'Transport' && (ev.FromDestinationID || ev.ToDestinationID) ? `${esc(destName(ev.FromDestinationID) || '?')} ${ico('arrow')} ${esc(destName(ev.ToDestinationID) || '?')}` : '';
+  const bk = ev.BookingID ? rec('Bookings',ev.BookingID) : null;
+  return `<details class="act"><summary><span class="time">${esc(ev.StartTime || '–')}</span>
+    <span style="flex:1;min-width:0"><b>${esc(ev.Title)}</b>${route ? `<div class="xs mute row" style="gap:4px">${route}</div>` : ''}</span>
+    ${ev.ItemType === 'Transport' ? badge(ev.TransportType || 'Travel') : ''}${isB ? '' : badge(ev.BookingStatus && ev.BookingStatus !== 'Not needed' ? ev.BookingStatus : '')}</summary>
+    <div class="det sm">
+      ${ev.StartTime || ev.EndTime ? `<p class="mute">${esc(ev.StartTime || '')}${ev.EndTime ? ' – ' + esc(ev.EndTime) : ''}</p>` : ''}
+      ${ev.Description ? `<p>${esc(ev.Description)}</p>` : ''}
+      ${cost ? `<p>Estimated: <b>${aud(cost)}</b> ${ev.Currency && ev.Currency !== 'AUD' ? `<span class="mute">(${esc(num(ev.EstimatedCost,ev.Currency))})</span>` : ''}</p>` : ''}
+      ${ev.Priority ? `<p>Priority: ${badge(ev.Priority)}</p>` : ''}
+      ${bk && bk.ConfirmationRef ? `<p>Booking ref: <span class="ref mono">${esc(bk.ConfirmationRef)}</span></p>` : ''}
+      ${ev.Notes ? `<p class="mute">${esc(ev.Notes)}</p>` : ''}
+      <div class="row wrap" style="margin-top:8px">${linkBtn(ev.MapsUrl,'Map')}${bk ? linkBtn(bk.ConfirmationUrl,'Confirmation') : ''}
+      ${isB ? `<button class="btn sm" data-act="edit" data-tab="Bookings" data-id="${esc(ev.BookingID)}">${ico('edit')} Open booking</button>` : editDel('Itinerary',ev.ItineraryID)}</div>
+    </div></details>`;
+}
+function dayCard(date,evs){
+  const dn = dayNo(date), d = destOnDate(date), tr = evs.some(e => e.ItemType === 'Transport'), lod = lodging(date), isToday = date === todayStr();
+  const est = sum(evs, e => e.src === 'booking' ? 0 : (e.BookingID && rec('Bookings',e.BookingID)) ? 0 : toAud(e.EstimatedCost,e.Currency))
+            + sum(S.data.Bookings.filter(b => b.StartDate === date && b.BookingStatus !== 'Cancelled' && b.Category !== 'Accommodation'), b => toAud(b.Cost,b.Currency,b.CostAUD));
+  const spent = sum(S.data.Expenses.filter(e => e.Date === date), e => toAud(e.Amount,e.Currency,e.AmountAUD));
+  return `<div class="card day ${tr ? 'travel' : ''} ${isToday ? 'today' : ''}">
+    <div class="day-h"><div class="daynum"><span>${dn ? 'Day' : ''}</span><b>${dn || parseD(date).getUTCDate()}</b></div>
+      <div style="flex:1;min-width:0"><b>${esc(fmtDate(date))}</b> ${isToday ? '<span class="badge good">Today</span>' : ''} ${tr ? '<span class="badge info">Travel day</span>' : ''}
+        <div class="xs mute">${d ? esc(d.Name + (d.Country ? ', ' + d.Country : '')) : 'No destination set'}${lod ? ' · Stay: ' + esc(lod) : ''}</div>
+        <div class="xs mute">${est ? 'Est. ' + aud(est) : ''}${est && spent ? ' · ' : ''}${spent ? 'Spent ' + aud(spent) : ''}</div></div>
+      ${addBtn('Itinerary',{Date:date,DestinationID:d ? d.DestinationID : ''},'')}</div>
+    <div class="day-b">${evs.length ? evs.map(eventRow).join('') : '<div class="mute sm" style="padding:12px 0">Free day – nothing planned.</div>'}</div></div>`;
+}
+
+/* ---------- pages ---------- */
+const PAGES = {};
+
+PAGES.dashboard = function(){
+  const t = tripObj(), ph = phase(), today = todayStr(), B = budgetCalc();
+  const evs = allEvents().sort(evSort), ds = dests(), tasks = S.data.Tasks, bks = S.data.Bookings.filter(b => b.BookingStatus !== 'Cancelled');
+  const dur = t.StartDate && t.EndDate ? diffDays(t.StartDate,t.EndDate) + 1 : null;
+  let big, sub;
+  if (ph === 'upcoming') { const n = t.StartDate ? diffDays(today,t.StartDate) : null; big = n == null ? '–' : n; sub = n == null ? 'Set your dates' : n === 1 ? 'day to go' : 'days to go'; }
+  else if (ph === 'underway') { big = 'Day ' + (diffDays(t.StartDate,today) + 1); sub = `of ${dur} · ${diffDays(today,t.EndDate)} days left`; }
+  else { big = diffDays(t.EndDate,today); sub = 'days since you got home'; }
+  const countries = new Set(ds.map(d => d.Country).filter(Boolean)); (t.Countries || '').split(',').map(s => s.trim()).filter(Boolean).forEach(c => countries.add(c));
+  const nextDest = ds.find(d => d.ArrivalDate && d.ArrivalDate >= today) || (ph === 'upcoming' ? ds[0] : null);
+  const upcomingEv = evs.filter(e => e.Date >= today);
+  const todays = evs.filter(e => e.Date === today);
+  const booked = bks.filter(b => b.BookingStatus === 'Booked'), outstanding = bks.filter(b => b.BookingStatus !== 'Booked');
+  const upBook = sorted(booked.filter(b => !b.StartDate || b.StartDate >= today),'StartDate').slice(0,3);
+  const open = tasks.filter(x => x.Status !== 'Done' && x.Status !== 'Skipped'), done = tasks.filter(x => x.Status === 'Done');
+  const due = sorted(open.filter(x => x.DueDate),'DueDate').slice(0,4);
+  const rem = [];
+  open.filter(x => x.DueDate && x.DueDate < today).forEach(x => rem.push(['bad',`Overdue: ${x.Description}`]));
+  booked.filter(b => b.PaymentStatus === 'Unpaid').forEach(b => rem.push(['warn',`Unpaid booking: ${b.Description}`]));
+  booked.filter(b => !b.ConfirmationRef && !b.ConfirmationUrl).forEach(b => rem.push(['warn',`No confirmation saved: ${b.Description}`]));
+  if (t.DateStatus === 'Provisional') rem.push(['info','Trip dates are still provisional']);
+  if (!B.budget) rem.push(['info','No budget set yet – edit the trip to add one']);
+  if (B.budget && B.forecast > B.budget) rem.push(['bad',`Forecast is ${aud(B.forecast - B.budget)} over budget`]);
+  if (missingFx) rem.push(['warn','Some amounts have no exchange rate – add one under Budget']);
+  const pct = B.budget ? Math.min(100, B.forecast / B.budget * 100) : 0, spentPct = B.budget ? Math.min(100, B.spent / B.budget * 100) : 0;
+  const evLine = e => `<div class="row"><span class="time">${esc(e.StartTime || fmtShort(e.Date).slice(0,6))}</span><span style="flex:1"><b>${esc(e.Title)}</b><div class="xs mute">${esc(destName(e.DestinationID))}</div></span>${e.ItemType === 'Transport' ? badge('Travel') : ''}</div>`;
+  return `
+  <div class="card hero stack">
+    <div class="row between wrap"><div><div class="xs" style="opacity:.8">${esc(t.Countries || '')}</div><h2>${esc(t.TripName)}</h2></div>${badge(ph === 'upcoming' ? 'Upcoming' : ph === 'underway' ? 'Underway' : 'Completed')}</div>
+    <div class="row wrap" style="gap:18px;align-items:flex-end"><div><div class="big">${esc(big)}</div><div class="sm" style="opacity:.85">${esc(sub)}</div></div>
+      <div class="sm" style="opacity:.9">${t.StartDate ? esc(fmtDate(t.StartDate)) + ' → ' + esc(fmtDate(t.EndDate)) : 'Dates not set'}<br>${dur ? dur + ' days · ' + (dur - 1) + ' nights' : ''} ${t.DateStatus ? badge(t.DateStatus) : ''} · ${esc(t.Travellers || 2)} travellers</div></div>
+  </div>
+  <div class="row wrap" style="margin:14px 0 4px">${addBtn('Itinerary',{Date: ph === 'underway' ? today : ''},'Activity')}${addBtn('Expenses',{Date:today},'Expense')}${addBtn('Bookings',null,'Booking')}${addBtn('Tasks',null,'Task')}${addBtn('Places',null,'Place')}</div>
+  <div class="grid g2" style="margin-top:10px">
+    ${ph === 'underway' ? `<div class="card"><h3>Today's itinerary <button class="btn sm ghost" data-act="nav" data-page="itinerary">Open</button></h3><div class="list">${todays.length ? todays.map(evLine).join('') : '<div class="mute">Nothing planned today – a free day.</div>'}</div></div>` : ''}
+    ${ph !== 'completed' ? `<div class="card"><h3>${ph === 'underway' ? 'Coming up' : 'Upcoming activities'}</h3><div class="list">${cap(upcomingEv.filter(e => e.Date > (ph === 'underway' ? today : '')),5).map(evLine).join('') || '<div class="mute">No activities planned yet.</div>'}</div></div>` : ''}
+    ${nextDest && ph !== 'completed' ? `<div class="card"><h3>Next destination</h3><b style="font-size:20px">${esc(nextDest.Name)}</b><div class="mute sm">${esc(nextDest.Country || '')}</div>
+       <div class="sm" style="margin-top:8px">${nextDest.ArrivalDate ? 'Arrive ' + esc(fmtDate(nextDest.ArrivalDate)) + ` · in ${Math.max(0,diffDays(today,nextDest.ArrivalDate))} days` : 'Arrival date not set'}</div>
+       ${nextDest.TransportNotes ? `<div class="sm mute" style="margin-top:6px">${esc(nextDest.TransportNotes)}</div>` : ''}<div class="row wrap" style="margin-top:10px">${linkBtn(nextDest.MapsUrl,'Map')}</div></div>` : ''}
+    <div class="card"><h3>Budget <button class="btn sm ghost" data-act="nav" data-page="budget">Details</button></h3>
+      ${B.budget ? `<div class="progress ${B.forecast > B.budget ? 'over' : ''}"><i style="width:${pct}%"></i><span class="mark" style="left:${spentPct}%"></span></div>` : '<div class="mute sm">Set a trip budget to see progress.</div>'}
+      <div class="kv" style="margin-top:12px"><div class="stat"><span class="xs mute">Budget</span><b>${B.budget ? aud(B.budget) : '–'}</b></div><div class="stat"><span class="xs mute">Forecast</span><b>${aud(B.forecast)}</b></div>
+        <div class="stat"><span class="xs mute">Spent</span><b>${aud(B.spent)}</b></div><div class="stat"><span class="xs mute">Remaining</span><b style="color:${B.remaining < 0 ? 'var(--bad)' : 'var(--good)'}">${B.budget ? aud(B.remaining) : '–'}</b></div></div></div>
+    <div class="card"><h3>Bookings <button class="btn sm ghost" data-act="nav" data-page="bookings">Open</button></h3>
+      <div class="kv"><div class="stat"><span class="xs mute">Confirmed</span><b style="color:var(--good)">${booked.length}</b></div><div class="stat"><span class="xs mute">Outstanding</span><b style="color:var(--warn)">${outstanding.length}</b></div></div>
+      <div class="list" style="margin-top:12px">${upBook.map(b => `<div class="row"><span style="flex:1"><b>${esc(b.Description)}</b><div class="xs mute">${esc(fmtShort(b.StartDate) || 'Date TBC')}${b.ConfirmationRef ? ' · ' + esc(b.ConfirmationRef) : ''}</div></span>${badge(b.Category)}</div>`).join('') || '<div class="mute sm">No upcoming reservations.</div>'}</div></div>
+    <div class="card"><h3>Preparation <button class="btn sm ghost" data-act="nav" data-page="tasks">Open</button></h3>
+      <div class="progress"><i style="width:${tasks.length ? done.length / tasks.length * 100 : 0}%"></i></div>
+      <div class="sm mute" style="margin:6px 0 10px">${done.length} done · ${open.length} outstanding</div>
+      <div class="list">${due.map(x => `<div class="row"><span style="flex:1">${esc(x.Description)}</span><span class="xs ${x.DueDate < today ? '' : 'mute'}" style="${x.DueDate < today ? 'color:var(--bad)' : ''}">${esc(fmtShort(x.DueDate))}</span></div>`).join('') || '<div class="mute sm">No deadlines set.</div>'}</div></div>
+    <div class="card"><h3>Destinations <button class="btn sm ghost" data-act="nav" data-page="destinations">Open</button></h3>
+      <div class="sm mute" style="margin-bottom:8px">${[...countries].map(esc).join(' · ') || 'No countries yet'}</div>
+      <div class="list">${ds.map(d => `<div class="row"><span style="flex:1"><b>${esc(d.Name)}</b> <span class="mute xs">${esc(d.Country)}</span></span><span class="xs mute">${nights(d) == null ? '' : nights(d) + (nights(d) === 1 ? ' night' : ' nights')}</span></div>`).join('') || '<div class="mute sm">Add your route under Destinations.</div>'}</div></div>
+    <div class="card"><h3>Important reminders</h3><div class="list">${rem.map(r => `<div class="row"><span class="badge ${r[0]}">!</span><span class="sm">${esc(r[1])}</span></div>`).join('') || '<div class="mute sm">All clear. Nothing needs attention.</div>'}</div></div>
+  </div>`;
+};
+
+PAGES.itinerary = function(){
+  const evs = allEvents().sort(evSort), dates = tripDates(), ds = dests();
+  const filterBar = `<div class="filters">${sel('dest',ds.map(d => [d.DestinationID,d.Name]),'All destinations')}</div>`;
+  const views = ['days','timeline','calendar'].map(v => `<button class="chip ${S.itinView === v ? 'on' : ''}" data-act="itinView" data-v="${v}">${v[0].toUpperCase() + v.slice(1)}</button>`).join('');
+  let body = '';
+  if (!dates.length) body = `<div class="card empty">No dates yet. Set trip dates or add an activity.</div>`;
+  else if (S.itinView === 'days') {
+    body = `<div class="grid g2">${dates.map(d => ({d, e: evs.filter(e => e.Date === d && matchDest(e,d))})).filter(x => !S.f.dest || x.e.length || (destOnDate(x.d)||{}).DestinationID === S.f.dest).map(x => dayCard(x.d,x.e)).join('')}</div>`;
+    const undated = evs.filter(e => !e.Date); if (undated.length) body += `<h3 style="margin:16px 0 8px">Unscheduled</h3><div class="card">${undated.map(eventRow).join('')}</div>`;
+  } else if (S.itinView === 'timeline') {
+    const sh = evs.filter(e => e.Date && matchDest(e,e.Date));
+    body = sh.length ? `<div class="card"><div class="tl">${sh.map((e,i) => `${i === 0 || sh[i-1].Date !== e.Date ? `<div class="ev" style="padding-top:${i ? 8 : 0}px"><b>${esc(fmtDate(e.Date))}</b> <span class="xs mute">${dayNo(e.Date) ? 'Day ' + dayNo(e.Date) : ''}</span></div>` : ''}<div class="ev">${eventRow(e)}</div>`).join('')}</div></div>` : '<div class="card empty">No activities yet.</div>';
+  } else {
+    const t = tripObj(); if (!S.calMonth) S.calMonth = (t && t.StartDate || todayStr()).slice(0,7);
+    const [y,m] = S.calMonth.split('-').map(Number), first = new Date(Date.UTC(y,m-1,1)), lead = (first.getUTCDay() + 6) % 7, days = new Date(Date.UTC(y,m,0)).getUTCDate();
+    let cells = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `<div class="dow">${d}</div>`).join('') + '<div></div>'.repeat(lead);
+    for (let i = 1; i <= days; i++) {
+      const ds_ = `${y}-${pad(m)}-${pad(i)}`, n = evs.filter(e => e.Date === ds_).length, inTrip = t && t.StartDate && ds_ >= t.StartDate && ds_ <= t.EndDate;
+      cells += `<button class="cell ${inTrip ? 'trip' : ''} ${ds_ === todayStr() ? 'today' : ''} ${S.calDay === ds_ ? 'sel' : ''}" data-act="calDay" data-date="${ds_}"><span>${i}</span><i>${n ? n + (n === 1 ? ' item' : ' items') : ''}</i></button>`;
+    }
+    const prev = ymd(new Date(Date.UTC(y,m-2,1))).slice(0,7), next = ymd(new Date(Date.UTC(y,m,1))).slice(0,7);
+    body = `<div class="card"><div class="row between" style="margin-bottom:10px"><button class="btn sm" data-act="calMonth" data-m="${prev}">‹</button><b>${esc(first.toLocaleDateString('en-AU',{month:'long',year:'numeric',timeZone:'UTC'}))}</b><button class="btn sm" data-act="calMonth" data-m="${next}">›</button></div><div class="cal">${cells}</div></div>`
+      + (S.calDay ? `<div style="margin-top:14px">${dayCard(S.calDay, evs.filter(e => e.Date === S.calDay))}</div>` : '<p class="mute sm" style="text-align:center">Tap a day to see or add plans.</p>');
+  }
+  return head('Itinerary', addBtn('Itinerary',null,'Activity')) + `<div class="chips" style="margin-bottom:12px">${views}</div>` + filterBar + body;
+};
+
+PAGES.destinations = function(){
+  const ds = dests();
+  const route = ds.length ? `<div class="card" style="margin-bottom:14px"><h3>Route</h3><div class="route">${ds.map((d,i) => `${i ? `<span class="arrow">${ico('arrow')}</span>` : ''}<div class="stop"><b>${esc(d.Name)}</b><div class="xs mute">${esc(d.Country || '')}</div><div class="xs">${nights(d) == null ? 'dates TBC' : nights(d) + 'n'}</div></div>`).join('')}</div></div>` : '';
+  return head('Destinations', addBtn('Destinations',{SortOrder: ds.length + 1})) + route +
+    `<div class="grid g2">${ds.map(d => `<div class="card stack"><div class="row between"><div><h2 style="font-size:18px">${esc(d.Name)}</h2><div class="mute sm">${esc(d.Country || '')}</div></div><div class="badge info">${nights(d) == null ? 'TBC' : nights(d) + ' nights'}</div></div>
+      <div class="sm">${d.ArrivalDate ? esc(fmtDate(d.ArrivalDate)) : 'Arrival TBC'} → ${d.DepartureDate ? esc(fmtDate(d.DepartureDate)) : 'Departure TBC'}</div>
+      ${d.Accommodation ? `<div class="sm">Stay: ${esc(d.Accommodation)}</div>` : ''}${d.TransportNotes ? `<div class="sm">Transport: ${esc(d.TransportNotes)}</div>` : ''}${d.Notes ? `<div class="sm mute">${esc(d.Notes)}</div>` : ''}
+      <div class="row wrap">${linkBtn(d.MapsUrl || '', 'Google Maps')}${safeUrl(d.MapsUrl) ? '' : `<a class="btn sm" target="_blank" rel="noopener noreferrer" href="https:${'/'}${'/'}www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.Name + ' ' + (d.Country || ''))}">${ico('link')} Search maps</a>`}<span class="spacer"></span>${editDel('Destinations',d.DestinationID)}</div></div>`).join('') || '<div class="card empty">No destinations yet.</div>'}</div>`;
+};
+
+PAGES.explore = function(){
+  const f = S.f, cats = S.schema.Places.columns.find(c => c.name === 'Category').enums, sts = S.schema.Places.columns.find(c => c.name === 'Status').enums;
+  const list = S.data.Places.filter(p => (!f.cat || p.Category === f.cat) && (!f.pst || p.Status === f.pst) && (!f.dest || p.DestinationID === f.dest) && matchQ(p,['Name','Description','Notes']))
+    .sort((a,b) => ['High','Medium','Low',''].indexOf(a.Priority) - ['High','Medium','Low',''].indexOf(b.Priority));
+  return head('Explore', addBtn('Places',null,'Place')) +
+    `<div class="chips" style="margin-bottom:10px"><button class="chip ${!f.cat ? 'on' : ''}" data-act="setf" data-k="cat" data-v="">All</button>${cats.map(c => `<button class="chip ${f.cat === c ? 'on' : ''}" data-act="setf" data-k="cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    <div class="filters">${searchBox('Search places')}${sel('pst',sts,'Any status')}${sel('dest',dests().map(d => [d.DestinationID,d.Name]),'All destinations')}</div>
+    <div class="grid g2">${list.map(p => `<div class="card stack"><div class="row between"><b style="font-size:17px">${esc(p.Name)}</b>${badge(p.Status)}</div>
+      <div class="row wrap">${badge(p.Category)}${badge(p.Priority)}<span class="xs mute">${esc(destName(p.DestinationID))}</span></div>
+      ${p.Description ? `<div class="sm">${esc(p.Description)}</div>` : ''}
+      <div class="xs mute">${p.EstimatedCost !== '' ? 'Est. ' + esc(num(p.EstimatedCost,p.Currency)) : ''}${p.EstimatedCost !== '' && p.EstimatedDurationMins ? ' · ' : ''}${p.EstimatedDurationMins ? esc(p.EstimatedDurationMins) + ' mins' : ''}</div>
+      ${p.Notes ? `<div class="xs mute">${esc(p.Notes)}</div>` : ''}
+      <div class="row wrap">${linkBtn(p.MapsUrl,'Map')}${linkBtn(p.WebsiteUrl,'Website')}</div>
+      <div class="row wrap">${p.Status !== 'Added to itinerary' && p.Status !== 'Completed' && p.Status !== 'Skipped' ? `<button class="btn sm pri" data-act="place2itin" data-id="${esc(p.PlaceID)}">${ico('plus')} Add to itinerary</button>` : ''}<span class="spacer"></span>${editDel('Places',p.PlaceID)}</div></div>`).join('') || '<div class="card empty">No places match. Save ideas here before deciding.</div>'}</div>`;
+};
+
+PAGES.bookings = function(){
+  const f = S.f, today = todayStr(), cats = S.schema.Bookings.columns.find(c => c.name === 'Category').enums;
+  const all = S.data.Bookings;
+  const list = all.filter(b => (!f.bst || b.BookingStatus === f.bst) && (!f.bcat || b.Category === f.bcat) && matchQ(b,['Description','Provider','ConfirmationRef','Notes']))
+    .sort((a,b) => (a.BookingStatus === 'Cancelled') - (b.BookingStatus === 'Cancelled') || String(a.StartDate||'9999').localeCompare(String(b.StartDate||'9999')) || String(a.StartTime||'').localeCompare(String(b.StartTime||'')));
+  const quick = sorted(all.filter(b => b.BookingStatus === 'Booked' && (!b.StartDate || b.EndDate >= today || b.StartDate >= today)),'StartDate').slice(0,3);
+  const card = b => `<div class="card stack ${b.BookingStatus === 'Cancelled' ? 'done' : ''}" style="${b.BookingStatus === 'Cancelled' ? 'text-decoration:none' : ''}"><div class="row between"><div style="min-width:0"><b style="font-size:16px">${esc(b.Description)}</b><div class="xs mute">${esc(b.Provider || '')}${b.Provider && b.DestinationID ? ' · ' : ''}${esc(destName(b.DestinationID))}</div></div>${badge(b.Category)}</div>
+    <div class="sm">${b.StartDate ? esc(fmtDate(b.StartDate)) + (b.StartTime ? ' ' + esc(b.StartTime) : '') : 'Date TBC'}${b.EndDate ? ' → ' + esc(fmtDate(b.EndDate)) + (b.EndTime ? ' ' + esc(b.EndTime) : '') : ''}</div>
+    <div class="row wrap">${badge(b.BookingStatus)}${badge(b.PaymentStatus)}${b.Cost !== '' ? `<b>${aud(toAud(b.Cost,b.Currency,b.CostAUD))}</b>${b.Currency && b.Currency !== 'AUD' ? `<span class="xs mute">${esc(num(b.Cost,b.Currency))}</span>` : ''}` : ''}</div>
+    ${b.ConfirmationRef ? `<div class="row"><span class="ref mono">${esc(b.ConfirmationRef)}</span><button class="btn sm" data-act="copy" data-text="${esc(b.ConfirmationRef)}">${ico('copy')} Copy</button></div>` : ''}
+    ${b.Notes ? `<div class="xs mute">${esc(b.Notes)}</div>` : ''}
+    <div class="row wrap">${linkBtn(b.ConfirmationUrl,'Confirmation')}${b.BookingStatus === 'Booked' ? `<button class="btn sm" data-act="pay" data-id="${esc(b.BookingID)}">${ico('budget')} Record payment</button>` : ''}<span class="spacer"></span>${editDel('Bookings',b.BookingID)}</div></div>`;
+  return head('Bookings', addBtn('Bookings',null,'Booking')) +
+    (quick.length ? `<div class="card flat" style="margin-bottom:14px"><h3>Quick access</h3><div class="list">${quick.map(b => `<div class="row"><span style="flex:1"><b>${esc(b.Description)}</b><div class="xs mute">${esc(fmtShort(b.StartDate) || 'Date TBC')}</div></span>${b.ConfirmationRef ? `<span class="ref mono">${esc(b.ConfirmationRef)}</span><button class="btn sm" data-act="copy" data-text="${esc(b.ConfirmationRef)}">${ico('copy')}</button>` : ''}${linkBtn(b.ConfirmationUrl,'Open')}</div>`).join('')}</div></div>` : '') +
+    `<div class="filters">${searchBox('Search bookings or reference')}${sel('bst',['Researching','Planned','Booked','Cancelled'],'Any status')}${sel('bcat',cats,'All categories')}</div>
+    <div class="grid g2">${list.map(card).join('') || '<div class="card empty">No bookings yet.</div>'}</div>`;
+};
+
+PAGES.tasks = function(){
+  const f = S.f, cats = S.schema.Tasks.columns.find(c => c.name === 'Category').enums, today = todayStr();
+  const list = S.data.Tasks.filter(x => (!f.tst || (f.tst === 'open' ? x.Status !== 'Done' && x.Status !== 'Skipped' : x.Status === f.tst)) && (!f.tcat || x.Category === f.tcat) && matchQ(x,['Description','Notes']))
+    .sort((a,b) => (a.Status === 'Done') - (b.Status === 'Done') || String(a.DueDate||'9999').localeCompare(String(b.DueDate||'9999')));
+  const done = S.data.Tasks.filter(x => x.Status === 'Done').length, total = S.data.Tasks.length;
+  return head('Preparation', addBtn('Tasks',null,'Task')) +
+    `<div class="card" style="margin-bottom:14px"><div class="row between sm"><span>${done} of ${total} complete</span><span class="mute">${total ? Math.round(done / total * 100) : 0}%</span></div><div class="progress" style="margin-top:8px"><i style="width:${total ? done / total * 100 : 0}%"></i></div></div>
+    <div class="filters">${searchBox('Search tasks')}${sel('tst',[['open','Outstanding'],'To do','In progress','Done','Skipped'],'All')}${sel('tcat',cats,'All categories')}</div>
+    <div class="card"><div class="list">${list.map(x => `<div class="row"><button class="chk ${x.Status === 'Done' ? 'on' : ''}" data-act="toggleTask" data-id="${esc(x.TaskID)}" aria-label="Toggle done">${x.Status === 'Done' ? ico('check') : ''}</button>
+      <div style="flex:1;min-width:0" class="${x.Status === 'Done' ? 'done' : ''}"><div>${esc(x.Description)}</div><div class="xs mute">${esc(x.Category || '')}${x.DueDate ? ` · <span style="${x.DueDate < today && x.Status !== 'Done' ? 'color:var(--bad)' : ''}">due ${esc(fmtShort(x.DueDate))}</span>` : ''}${x.Notes ? ' · ' + esc(x.Notes) : ''}</div></div>${badge(x.Priority)}${editDel('Tasks',x.TaskID)}</div>`).join('') || '<div class="empty">No tasks match.</div>'}</div></div>`;
+};
+
+PAGES.budget = function(){
+  const B = budgetCalc(), t = tripObj(), today = todayStr(), ph = phase();
+  const cats = S.schema.Expenses.columns.find(c => c.name === 'Category').enums;
+  const byCatF = groupSum(B.ents, e => e.cat, e => e.amt), byCatS = groupSum(B.spentList, e => e.cat, e => e.amt);
+  const maxC = Math.max(1, ...cats.map(c => Math.max(byCatF[c] || 0, byCatS[c] || 0)));
+  const byDestF = groupSum(B.ents, e => e.dest, e => e.amt), byDestS = groupSum(B.spentList, e => e.dest, e => e.amt);
+  const destIds = [...new Set([...Object.keys(byDestF), ...Object.keys(byDestS)])];
+  const maxD = Math.max(1, ...destIds.map(k => Math.max(byDestF[k] || 0, byDestS[k] || 0)));
+  const dur = t.StartDate && t.EndDate ? diffDays(t.StartDate,t.EndDate) + 1 : null;
+  const elapsed = ph === 'underway' ? diffDays(t.StartDate,today) + 1 : ph === 'completed' ? dur : null;
+  const avgSpent = elapsed ? B.spent / elapsed : null, avgPlan = dur ? B.forecast / dur : null;
+  const pct = B.budget ? Math.min(100, B.forecast / B.budget * 100) : 0, sp = B.budget ? Math.min(100, B.spent / B.budget * 100) : 0;
+  const exps = S.data.Expenses.slice().sort((a,b) => String(b.Date).localeCompare(String(a.Date)));
+  const bar = (name,f,s,max) => `<div class="br"><span class="${name ? '' : 'mute'}">${esc(name || 'Unassigned')}</span><div><div class="progress"><i style="width:${f / max * 100}%"></i></div><div class="progress" style="margin-top:3px"><i style="width:${s / max * 100}%;background:var(--accent2)"></i></div></div><span class="xs" style="text-align:right">${aud(f)}<br><span style="color:var(--accent2)">${aud(s)}</span></span></div>`;
+  const rates = sorted(S.data.ExchangeRates,'Currency');
+  return head('Budget', `${addBtn('Expenses',{Date:today},'Expense')}`) +
+  `${missingFx ? `<div class="card flat" style="margin-bottom:14px;border-color:var(--warn)">Note: ${missingFx} amount(s) have no exchange rate and are counted as $0. Add rates below.</div>` : ''}
+  <div class="card stack"><div class="kv"><div class="stat"><span class="xs mute">Budget</span><b>${B.budget ? aud(B.budget) : '–'}</b></div><div class="stat"><span class="xs mute">Forecast total</span><b>${aud(B.forecast)}</b></div><div class="stat"><span class="xs mute">Spent so far</span><b style="color:var(--accent2)">${aud(B.spent)}</b></div><div class="stat"><span class="xs mute">Remaining (vs forecast)</span><b style="color:${B.remaining < 0 ? 'var(--bad)' : 'var(--good)'}">${B.budget ? aud(B.remaining) : '–'}</b></div></div>
+   ${B.budget ? `<div class="progress ${B.forecast > B.budget ? 'over' : ''}"><i style="width:${pct}%"></i><span class="mark" style="left:${sp}%"></span></div><div class="xs mute">Bar = forecast; white marker = spent. Cash left after spending: ${aud(B.cashLeft)}</div>` : '<div class="sm mute">Edit the trip to set a budget.</div>'}
+   <div class="kv"><div class="stat"><span class="xs mute">Planned (estimates)</span><b>${aud(B.planned)}</b></div><div class="stat"><span class="xs mute">Committed (booked)</span><b>${aud(B.committed)}</b></div><div class="stat"><span class="xs mute">Still to pay on bookings</span><b>${aud(B.outstanding)}</b></div><div class="stat"><span class="xs mute">${elapsed ? 'Avg spent / day' : 'Avg forecast / day'}</span><b>${aud(elapsed ? avgSpent : avgPlan)}</b></div></div></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>By category <span class="xs">forecast · <span style="color:var(--accent2)">spent</span></span></h3><div class="bars">${cats.map(c => bar(c,byCatF[c] || 0,byCatS[c] || 0,maxC)).join('')}</div></div>
+    <div class="card"><h3>By destination</h3><div class="bars">${destIds.map(k => bar(destName(k),byDestF[k] || 0,byDestS[k] || 0,maxD)).join('') || '<div class="mute sm">Nothing assigned to destinations yet.</div>'}</div></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Expenses & payments</h3><div class="list">${exps.map(e => { const b = rec('Bookings',e.BookingID); return `<div class="row"><span style="flex:1;min-width:0"><b>${esc(e.Description)}</b><div class="xs mute">${esc(fmtShort(e.Date))}${e.Category ? ' · ' + esc(e.Category) : ''}${b ? ' · payment for ' + esc(b.Description) : ''}</div></span><span style="text-align:right"><b>${aud(toAud(e.Amount,e.Currency,e.AmountAUD))}</b>${e.Currency !== 'AUD' ? `<div class="xs mute">${esc(num(e.Amount,e.Currency))}</div>` : ''}</span>${editDel('Expenses',e.ExpenseID)}</div>`; }).join('') || '<div class="mute sm">No expenses recorded.</div>'}</div></div>
+  <div class="card" style="margin-top:14px"><h3>Exchange rates ${addBtn('ExchangeRates',{EffectiveDate:today},'Rate')}</h3><table class="t"><tr><th>Currency</th><th>AUD per 1 unit</th><th>From</th><th></th></tr>${rates.map(r => `<tr><td>${esc(r.Currency)}</td><td>${esc(r.RateToAUD)}</td><td>${esc(r.EffectiveDate)}</td><td style="text-align:right">${editDel('ExchangeRates',r.RateID)}</td></tr>`).join('')}</table>
+  <p class="xs mute">Entered manually. A booking or expense keeps the rate it was saved with; estimates use the latest rate.</p></div>
+  <details class="card flat" style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">How costs are counted (no double counting)</summary><div class="sm mute stack" style="margin-top:10px">
+   <p><b>Planned</b>: estimates on future itinerary items and shortlisted places, plus bookings still Researching/Planned. <b>Committed</b>: bookings marked Booked. <b>Payments</b>: expenses linked to a booking, which settle that booking and are not extra spend. <b>Direct spend</b>: expenses with no booking.</p>
+   <p>Each booking counts once as the larger of its cost and the payments made. Itinerary items linked to a booking, and places already on the itinerary, are skipped. Past-dated itinerary estimates drop out once their day has passed (the real cost should be an expense). Cancelled bookings count as $0.</p>
+   <p><b>Forecast</b> = planned + committed + direct. <b>Spent</b> = all payments + direct expenses.</p></div></details>`;
+};
+
+PAGES.trips = function(){
+  const act = S.trips.filter(t => t.Status !== 'Archived' && t.Status !== 'Completed'), hist = S.trips.filter(t => t.Status === 'Archived' || t.Status === 'Completed');
+  const card = t => `<div class="card stack"><div class="row between"><div><h2 style="font-size:18px">${esc(t.TripName)}</h2><div class="sm mute">${esc(t.Countries || '')}</div></div>${badge(t.Status)}</div>
+    <div class="sm">${t.StartDate ? esc(fmtDate(t.StartDate)) + ' → ' + esc(fmtDate(t.EndDate)) : 'Dates TBC'} ${badge(t.DateStatus)}</div><div class="xs mute">${t.Budget !== '' ? 'Budget ' + esc(num(t.Budget,t.Currency)) : 'No budget'} · ${esc(t.Travellers || '')} travellers</div>
+    <div class="row wrap">${t.TripID === S.tripId ? '<span class="badge good">Selected</span>' : `<button class="btn sm pri" data-act="pickTrip" data-id="${esc(t.TripID)}">Open</button>`}
+    ${t.Status === 'Archived' ? `<button class="btn sm" data-act="setTripStatus" data-id="${esc(t.TripID)}" data-s="Completed">Unarchive</button>` : `<button class="btn sm" data-act="setTripStatus" data-id="${esc(t.TripID)}" data-s="Archived">Archive</button>`}<span class="spacer"></span>${editDel('Trips',t.TripID)}</div></div>`;
+  return head('Trips', addBtn('Trips',{Currency:'AUD',Travellers:2,Status:'Planning',DateStatus:'Provisional'},'New trip')) +
+    `<div class="grid g2">${act.map(card).join('') || '<div class="card empty">No active trips.</div>'}</div>` +
+    (hist.length ? `<h3 style="margin:22px 0 10px">History</h3><div class="grid g2">${hist.map(card).join('')}</div>` : '');
+};
+
+/* ---------- events ---------- */
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); } catch(e){
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(_){} ta.remove();
+  }
+  toast('Copied ' + text);
+}
+const ACTS = {
+  nav: d => nav(d.page),
+  saveApi: () => {
+    const v = ($('#apiurl').value || '').trim().split('?')[0];
+    if (!v.startsWith('https:') || !v.includes('/macros/s/') || !v.endsWith('/exec')) return toast('That does not look like a web app link ending in /exec', true);
+    store('tb_api', v); store('tb_cache', ''); loadAll('', true);
+  },
+  theme: () => { store('tb_theme', curTheme() === 'light' ? 'dark' : 'light'); applyTheme(); renderChrome(); },
+  more: () => showModal(`<h2>More</h2><div class="sheetlist">${NAV.filter(n => !TAB_MAIN.includes(n[0])).map(n => `<button class="navbtn" data-act="nav" data-page="${n[0]}">${ico(n[2])}${n[1]}</button>`).join('')}</div><button class="btn ghost" data-act="closeModal" style="width:100%">Close</button>`),
+  closeModal,
+  scrim: (d,el,ev) => { if (ev.target === el) closeModal(); },
+  refresh: () => loadAll(S.tripId),
+  add: d => openForm(d.tab, null, d.defaults ? JSON.parse(d.defaults) : null),
+  edit: d => { const r = rec(d.tab,d.id); if (r) openForm(d.tab, r); },
+  del: async d => { const r = rec(d.tab,d.id); if (!r) return;
+    const extra = d.tab === 'Trips' ? ' This also deletes ALL of its destinations, itinerary, bookings, expenses and tasks.' : d.tab === 'Destinations' ? ' Items using it will be left without a destination.' : '';
+    if (await confirmDlg('Delete this ' + tabLabel(d.tab) + '?', 'This removes it from the Google Sheet and cannot be undone.' + extra)) deleteRecord(d.tab,d.id); },
+  copy: d => copyText(d.text),
+  setf: d => { S.f[d.k] = d.v; render(); },
+  itinView: d => { S.itinView = d.v; render(); },
+  calMonth: d => { S.calMonth = d.m; render(); },
+  calDay: d => { S.calDay = d.date; render(); },
+  pickTrip: d => { S.f = {}; loadAll(d.id, true).then(() => nav('dashboard')); },
+  setTripStatus: async d => { const t = rec('Trips',d.id); try { await saveRecord('Trips', {TripID:d.id, Status:d.s}, t.Version); toast(d.s === 'Archived' ? 'Archived' : 'Restored'); } catch(e){ toast(errMsg(e),true); } renderChrome(); render(); },
+  toggleTask: async d => { const x = rec('Tasks',d.id); try { await saveRecord('Tasks', {TaskID:d.id, Status: x.Status === 'Done' ? 'To do' : 'Done'}, x.Version); } catch(e){ toast(errMsg(e),true); } render(); },
+  pay: d => { const b = rec('Bookings',d.id); openForm('Expenses', null, {BookingID:b.BookingID, Description:'Payment: ' + b.Description, Category:BOOKING_TO_BUDGET[b.Category], Amount:b.Cost, Currency:b.Currency || 'AUD', DestinationID:b.DestinationID, Date:todayStr()}, async () => {
+      const cur = rec('Bookings',b.BookingID); if (cur && cur.PaymentStatus === 'Unpaid') { try { await saveRecord('Bookings', {BookingID:cur.BookingID, PaymentStatus:'Deposit paid'}, cur.Version); } catch(e){} } }); },
+  place2itin: d => { const p = rec('Places',d.id);
+    openForm('Itinerary', null, {Title:p.Name, Description:p.Description, EstimatedCost:p.EstimatedCost, Currency:p.Currency, MapsUrl:p.MapsUrl, DestinationID:p.DestinationID, PlaceID:p.PlaceID, Priority:p.Priority, ItemType:'Activity', BookingStatus:'Planned'},
+      async () => { const cur = rec('Places',p.PlaceID); try { await saveRecord('Places', {PlaceID:cur.PlaceID, Status:'Added to itinerary'}, cur.Version); } catch(e){} }); }
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const fn = ACTS[el.dataset.act]; if (fn) { if (el.tagName === 'A') return; fn(el.dataset, el, e); }
+});
+document.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.filter; if (k === 'q') { S.f.q = e.target.value; render(); } });
+document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.filter; if (k && k !== 'q') { S.f[k] = e.target.value; render(); } });
+$('#tripsel').addEventListener('change', e => { S.f = {}; loadAll(e.target.value, true); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ---------- start: show the saved copy instantly, then fetch fresh data ---------- */
+(function init(){
+  applyTheme(); renderChrome();
+  try { const q = new URLSearchParams(location.search).get('api'); if (q && !IN_GAS) store('tb_api', q.split('?')[0]); } catch(e){}
+  try { const c = store('tb_cache'); if (c) applyBootstrap(JSON.parse(c), true); } catch(e){}
+  loadAll(store('tb_trip') || '', true);
+})();
+</script>
+</body>
+</html>
