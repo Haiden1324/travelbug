@@ -5,12 +5,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0c0c0d">
-<title>TravelBug</title>
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>ROAM</title>
 <style>
 :root{
-  /* ===== TravelBug design tokens: monochrome, hairlines, one tiny red brand mark ===== */
+  /* ===== ROAM design tokens: monochrome, hairlines, one tiny red brand mark ===== */
   --bg:#09090b; --bg2:#0d0d0f; --card:#111113; --card2:#18181b;
   --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.13);
   --text:#fafafa; --mute:#8f8f98; --faint:#5e5e67; --on-accent:#09090b;
@@ -45,15 +43,13 @@ b{font-weight:600}
 .side{display:none}
 .main{padding:0 20px calc(100px + var(--safe-b));max-width:1040px;width:100%;margin:0 auto}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:calc(12px + var(--safe-t)) 0 12px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px;letter-spacing:-.03em}
-.logo{width:24px;height:24px;display:grid;place-items:center;color:var(--mute);flex:none}
-.logo svg,.logo img{width:24px;height:24px;display:block;object-fit:contain}
-.brand small{display:none}
+.brand{display:flex;align-items:center;font-weight:700;font-size:15px;letter-spacing:.22em}
 .spacer{flex:1}
 .top .spacer{display:none}
 @media(min-width:900px){.top .spacer{display:block}}
-@media(max-width:400px){.top{flex-wrap:wrap}.top .spacer{display:block}.tripsel{order:5;flex:1 1 100%}}
-.tripsel{flex:1;min-width:0;max-width:none;width:auto;text-overflow:ellipsis;background:transparent;border:1px solid var(--line2);border-radius:var(--radius-sm);padding:0 28px 0 12px;min-height:38px;font-size:13px;font-weight:500;cursor:pointer}
+@media(max-width:560px){.top .spacer{display:block}}
+.tripsel{flex:0 1 auto;min-width:0;max-width:46vw;width:auto;background-color:transparent;border:0;border-radius:var(--radius-sm);padding:0 26px 0 10px;min-height:38px;font-size:14px;font-weight:600;letter-spacing:-.02em;cursor:pointer;background-position:right 6px center}
+.tripsel:hover{background-color:var(--card2)}
 .iconbtn{width:38px;height:38px;border-radius:var(--radius-sm);border:1px solid var(--line2);background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--text);padding:0}
 .iconbtn:hover{background:var(--card2)}
 .iconbtn svg.i{width:17px;height:17px}
@@ -73,7 +69,7 @@ b{font-weight:600}
 @media(min-width:900px){
   .app{grid-template-columns:236px minmax(0,1fr)}
   .side{display:block;position:sticky;top:0;height:100vh;padding:26px 16px;border-right:1px solid var(--line);background:var(--bg)}
-  .side .brand{padding:0 12px 28px;font-size:18px}
+  .side .brand{padding:2px 12px 30px;font-size:15px}
   .tabbar{display:none} .main{padding:0 44px 60px}
   .top{justify-content:flex-end;padding-top:18px}
   .top .brand{display:none}
@@ -123,9 +119,10 @@ b{font-weight:600}
 .chip:hover{color:var(--text)}
 .chip.on{background:var(--card2);border-color:var(--line2);color:var(--text)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.filters input,.filters select{flex:1;min-width:130px}
+.filters input,.filters select{flex:1;min-width:130px;min-height:38px;font-size:13.5px}
 input,select,textarea{width:100%;background:var(--card);border:1px solid var(--line2);border-radius:var(--radius-sm);padding:9px 12px;min-height:40px;outline:none;font-size:14px}
-select{cursor:pointer}
+select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox='0 0 12 12' fill='none' stroke='%238f8f98' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;background-size:12px;padding-right:32px;text-overflow:ellipsis}
+select option{background:var(--card);color:var(--text)}
 input::placeholder,textarea::placeholder{color:var(--faint)}
 input:focus,select:focus,textarea:focus{border-color:var(--text)}
 textarea{min-height:84px;resize:vertical}
@@ -133,6 +130,13 @@ label{display:block;font-size:12px;font-weight:500;color:var(--mute);margin-bott
 .field{margin-bottom:14px} .field.hidden{display:none}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px} .fgrid .full{grid-column:1/-1}
 @media(max-width:480px){.fgrid{grid-template-columns:1fr}}
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:0 0 12px}
+.sitem{background:transparent;border:0;border-left:1px solid var(--line);padding:18px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px;color:inherit;min-width:0}
+.sitem:first-child{border-left:0}
+.sitem:hover{background:var(--card)}
+.sitem b{font-size:22px;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1.2}
+.sitem .progress{margin-top:10px}
+@media(max-width:480px){.sitem{padding:14px 12px}.sitem b{font-size:18px}}
 .empty{text-align:center;color:var(--mute);padding:44px 12px}
 .stat{display:flex;flex-direction:column;gap:3px}
 .stat span{font-size:11.5px}
@@ -212,7 +216,7 @@ table.t tr:first-child th{border-top:0}
     var v=document.getElementById('view'), d='';
     try{ d=probe(); }catch(x){ d='probe failed: '+x.message; }
     if(v){
-      v.innerHTML='<div class="card"><b>TravelBug hit a problem</b><div class="sm mute" style="margin-top:8px;word-break:break-word"></div><pre class="xs mute" style="white-space:pre-wrap;word-break:break-all;margin:8px 0 0"></pre></div>';
+      v.innerHTML='<div class="card"><b>ROAM hit a problem</b><div class="sm mute" style="margin-top:8px;word-break:break-word"></div><pre class="xs mute" style="white-space:pre-wrap;word-break:break-all;margin:8px 0 0"></pre></div>';
       v.querySelector('div.sm').textContent=String(msg); v.querySelector('pre').textContent=d;
     }
   }
@@ -225,18 +229,18 @@ table.t tr:first-child th{border-top:0}
 <div class="bar" id="bar"></div>
 <div class="app">
   <aside class="side">
-    <div class="brand"><div class="logo" data-logo></div><div>TravelBug<small>Trip planner</small></div></div>
+    <div class="brand">ROAM</div>
     <nav id="sidenav"></nav>
   </aside>
   <div class="main">
     <header class="top">
-      <div class="brand"><div class="logo" data-logo></div><div>TravelBug</div></div>
+      <div class="brand">ROAM</div>
       <div class="spacer"></div>
       <select class="tripsel" id="tripsel" aria-label="Select trip"></select>
       <button class="iconbtn" id="theme" data-act="theme" aria-label="Toggle light or dark mode"></button>
       <button class="iconbtn" id="refresh" data-act="refresh" aria-label="Refresh data"></button>
     </header>
-    <div id="syncnote" class="xs mute" style="margin:-4px 0 8px"></div>
+    <div id="syncnote" class="xs" style="margin:-2px 0 6px;color:var(--faint);font-size:11px"></div>
     <main id="view"><div class="grid g2"><div class="skeleton"></div><div class="skeleton"></div></div></main>
   </div>
 </div>
@@ -246,7 +250,7 @@ table.t tr:first-child th{border-top:0}
 
 <script>
 /* ============================================================
-   TravelBug frontend. All data comes from the server via
+   ROAM frontend. All data comes from the server via
    google.script.run; the Google Sheet remains the source of truth.
    ============================================================ */
 const S = { schema:null, trips:[], tripId:'', data:{}, page:'dashboard', f:{}, user:'', loadedAt:'', cached:false, busy:0,
@@ -346,7 +350,7 @@ function call(fn,...args){
     .then(j => { if (!j.ok) throw new Error(j.error || 'Server error'); return j.result; });
 }
 function showApiSetup(note){
-  $('#view').innerHTML = `<div class="card stack" style="max-width:560px"><h2>Connect to your TravelBug data</h2>
+  $('#view').innerHTML = `<div class="card stack" style="max-width:560px"><h2>Connect to your ROAM data</h2>
     <p class="sm mute">Paste your Apps Script web app address (the long link ending in <b>/exec</b>). You only need to do this once on each device.</p>
     ${note ? `<p class="sm" style="color:var(--bad)">${esc(note)}</p>` : ''}
     <input id="apiurl" type="url" inputmode="url" placeholder="Paste the /exec link here" value="${esc(store('tb_api') || '')}">
@@ -485,14 +489,6 @@ function tabLabel(tab){ return ({ExchangeRates:'exchange rate',Itinerary:'activi
 
 /* ---------- chrome ---------- */
 function renderChrome(){
-  const bugSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.2L8 1M14.5 3.2L16 1" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/><ellipse cx="12" cy="14" rx="8" ry="8.5" fill="var(--brand)"/><path d="M6.5 4.8C7.7 3 9.7 2.3 12 2.3s4.3.7 5.5 2.5C16.1 6.2 14.1 6.8 12 6.8S7.9 6.2 6.5 4.8z" fill="var(--bug-ink)"/><path d="M12 6.8v15.5" stroke="var(--bug-ink)" stroke-width="1.2"/><g fill="var(--bug-ink)"><circle cx="8.6" cy="12" r="1.5"/><circle cx="15.4" cy="12" r="1.5"/><circle cx="9" cy="17.4" r="1.3"/><circle cx="15" cy="17.4" r="1.3"/></g></svg>';
-  document.querySelectorAll('[data-logo]').forEach(el => { if (!el.querySelector('img')) el.innerHTML = bugSvg; });
-  if (!window.__logoTried) {
-    window.__logoTried = true;
-    const im = new Image();
-    im.onload = () => document.querySelectorAll('[data-logo]').forEach(el => { el.innerHTML = '<img src="logo.png" alt="" width="24" height="24">'; });
-    im.src = 'logo.png';
-  }
   $('#refresh').innerHTML = ico('refresh');
   $('#theme').innerHTML = ico(curTheme() === 'light' ? 'moon' : 'sun');
   const sel = $('#tripsel');
@@ -501,7 +497,8 @@ function renderChrome(){
   $('#tabbar').innerHTML = TAB_MAIN.map(p => { const n = NAV.find(x => x[0] === p); return `<button class="tab ${S.page === p ? 'on' : ''}" data-act="nav" data-page="${p}">${ico(n[2])}${n[1]}</button>`; }).join('')
     + `<button class="tab ${TAB_MAIN.includes(S.page) ? '' : 'on'}" data-act="more">${ico('more')}More</button>`;
   const when = S.loadedAt ? new Date(S.loadedAt).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}) : '';
-  $('#syncnote').textContent = S.cached ? 'Showing saved copy – refreshing…' : (when ? `Last refreshed ${when}. Tap refresh to pick up changes made in Google Sheets.` : '');
+  $('#syncnote').textContent = S.cached ? 'Showing saved copy, refreshing…' : (when ? 'Updated ' + when : '');
+  $('#refresh').title = 'Refresh (pulls in any changes made in Google Sheets)';
 }
 function nav(page){ S.page = page; closeModal(); renderChrome(); render(); window.scrollTo(0,0); }
 
@@ -511,7 +508,7 @@ function render(){
   const caret = focus && document.activeElement.selectionStart;
   missingFx = 0;
   const fn = PAGES[S.page] || PAGES.dashboard;
-  if (!tripObj() && S.page !== 'trips') { v.innerHTML = `<div class="card empty"><h2>Welcome to TravelBug</h2><p>Create your first trip to get started.</p><button class="btn pri" data-act="add" data-tab="Trips">${ico('plus')} New trip</button></div>`; return; }
+  if (!tripObj() && S.page !== 'trips') { v.innerHTML = `<div class="card empty"><h2>Welcome to ROAM</h2><p>Create your first trip to get started.</p><button class="btn pri" data-act="add" data-tab="Trips">${ico('plus')} New trip</button></div>`; return; }
   v.innerHTML = fn();
   if (focus) { const el = $(`[data-filter="${focus}"]`); if (el) { el.focus(); try { el.setSelectionRange(caret,caret); } catch(e){} } }
 }
@@ -624,55 +621,35 @@ PAGES.dashboard = function(){
   const dur = t.StartDate && t.EndDate ? diffDays(t.StartDate,t.EndDate) + 1 : null;
   let big, sub;
   if (ph === 'upcoming') { const n = t.StartDate ? diffDays(today,t.StartDate) : null; big = n == null ? '–' : n; sub = n == null ? 'Set your dates' : n === 1 ? 'day to go' : 'days to go'; }
-  else if (ph === 'underway') { big = 'Day ' + (diffDays(t.StartDate,today) + 1); sub = `of ${dur} · ${diffDays(today,t.EndDate)} days left`; }
+  else if (ph === 'underway') { big = 'Day ' + (diffDays(t.StartDate,today) + 1); sub = 'of ' + dur + ' · ' + diffDays(today,t.EndDate) + ' days left'; }
   else { big = diffDays(t.EndDate,today); sub = 'days since you got home'; }
-  const countries = new Set(ds.map(d => d.Country).filter(Boolean)); (t.Countries || '').split(',').map(s => s.trim()).filter(Boolean).forEach(c => countries.add(c));
   const nextDest = ds.find(d => d.ArrivalDate && d.ArrivalDate >= today) || (ph === 'upcoming' ? ds[0] : null);
-  const upcomingEv = evs.filter(e => e.Date >= today);
-  const todays = evs.filter(e => e.Date === today);
   const booked = bks.filter(b => b.BookingStatus === 'Booked'), outstanding = bks.filter(b => b.BookingStatus !== 'Booked');
-  const upBook = sorted(booked.filter(b => !b.StartDate || b.StartDate >= today),'StartDate').slice(0,3);
   const open = tasks.filter(x => x.Status !== 'Done' && x.Status !== 'Skipped'), done = tasks.filter(x => x.Status === 'Done');
-  const due = sorted(open.filter(x => x.DueDate),'DueDate').slice(0,4);
   const rem = [];
-  open.filter(x => x.DueDate && x.DueDate < today).forEach(x => rem.push(['bad',`Overdue: ${x.Description}`]));
-  booked.filter(b => b.PaymentStatus === 'Unpaid').forEach(b => rem.push(['warn',`Unpaid booking: ${b.Description}`]));
-  booked.filter(b => !b.ConfirmationRef && !b.ConfirmationUrl).forEach(b => rem.push(['warn',`No confirmation saved: ${b.Description}`]));
-  if (t.DateStatus === 'Provisional') rem.push(['info','Trip dates are still provisional']);
-  if (!B.budget) rem.push(['info','No budget set yet – edit the trip to add one']);
-  if (B.budget && B.forecast > B.budget) rem.push(['bad',`Forecast is ${aud(B.forecast - B.budget)} over budget`]);
-  if (missingFx) rem.push(['warn','Some amounts have no exchange rate – add one under Budget']);
-  const pct = B.budget ? Math.min(100, B.forecast / B.budget * 100) : 0, spentPct = B.budget ? Math.min(100, B.spent / B.budget * 100) : 0;
-  const evLine = e => `<div class="row"><span class="time">${esc(e.StartTime || fmtShort(e.Date).slice(0,6))}</span><span style="flex:1"><b>${esc(e.Title)}</b><div class="xs mute">${esc(destName(e.DestinationID))}</div></span>${e.ItemType === 'Transport' ? badge('Travel') : ''}</div>`;
+  open.filter(x => x.DueDate && x.DueDate < today).forEach(x => rem.push('Overdue: ' + x.Description));
+  booked.filter(b => b.PaymentStatus === 'Unpaid').forEach(b => rem.push('Unpaid: ' + b.Description));
+  if (B.budget && B.forecast > B.budget) rem.push('Forecast is ' + aud(B.forecast - B.budget) + ' over budget');
+  if (missingFx) rem.push('Some amounts have no exchange rate');
+  const over = B.budget && B.forecast > B.budget ? 'over' : '';
+  const up = evs.filter(e => e.Date >= today).slice(0,4);
+  const pct = B.budget ? Math.min(100, B.forecast / B.budget * 100) : 0, tpct = tasks.length ? done.length / tasks.length * 100 : 0;
+  const evLine = e => '<div class="row"><span class="time">' + esc(e.StartTime || fmtShort(e.Date).slice(0,6)) + '</span><span style="flex:1;min-width:0"><b>' + esc(e.Title) + '</b><div class="xs mute">' + esc(destName(e.DestinationID)) + '</div></span>' + (e.ItemType === 'Transport' ? badge('Travel') : '') + '</div>';
   return `
-  <div class="card hero stack">
-    <div class="row between wrap"><div><div class="xs" style="opacity:.8">${esc(t.Countries || '')}</div><h2>${esc(t.TripName)}</h2></div>${badge(ph === 'upcoming' ? 'Upcoming' : ph === 'underway' ? 'Underway' : 'Completed')}</div>
-    <div class="row wrap" style="gap:18px;align-items:flex-end"><div><div class="big">${esc(big)}</div><div class="sm" style="opacity:.85">${esc(sub)}</div></div>
-      <div class="sm" style="opacity:.9">${t.StartDate ? esc(fmtDate(t.StartDate)) + ' → ' + esc(fmtDate(t.EndDate)) : 'Dates not set'}<br>${dur ? dur + ' days · ' + (dur - 1) + ' nights' : ''} ${t.DateStatus ? badge(t.DateStatus) : ''} · ${esc(t.Travellers || 2)} travellers</div></div>
+  <div class="card hero">
+    <div class="xs mute" style="margin-bottom:6px">${esc(t.Countries || '')}</div>
+    <h2>${esc(t.TripName)}</h2>
+    <div class="row wrap" style="gap:22px;align-items:flex-end;margin-top:22px"><div><div class="big">${esc(big)}</div><div class="sm mute" style="margin-top:6px">${esc(sub)}</div></div></div>
+    <div class="sm mute" style="margin-top:20px">${t.StartDate ? esc(fmtDate(t.StartDate)) + ' → ' + esc(fmtDate(t.EndDate)) : 'Dates not set'}${dur ? ' · ' + (dur - 1) + ' nights' : ''}${t.DateStatus === 'Provisional' ? ' · provisional' : ''}</div>
+    ${nextDest && ph !== 'completed' ? '<div class="sm" style="margin-top:4px">Next stop: <b>' + esc(nextDest.Name) + '</b>' + (nextDest.ArrivalDate ? ' <span class="mute">· ' + esc(fmtShort(nextDest.ArrivalDate)) + '</span>' : '') + '</div>' : ''}
   </div>
-  <div class="row wrap" style="margin:14px 0 4px">${addBtn('Itinerary',{Date: ph === 'underway' ? today : ''},'Activity')}${addBtn('Expenses',{Date:today},'Expense')}${addBtn('Bookings',null,'Booking')}${addBtn('Tasks',null,'Task')}${addBtn('Places',null,'Place')}</div>
-  <div class="grid g2" style="margin-top:10px">
-    ${ph === 'underway' ? `<div class="card"><h3>Today's itinerary <button class="btn sm ghost" data-act="nav" data-page="itinerary">Open</button></h3><div class="list">${todays.length ? todays.map(evLine).join('') : '<div class="mute">Nothing planned today – a free day.</div>'}</div></div>` : ''}
-    ${ph !== 'completed' ? `<div class="card"><h3>${ph === 'underway' ? 'Coming up' : 'Upcoming activities'}</h3><div class="list">${cap(upcomingEv.filter(e => e.Date > (ph === 'underway' ? today : '')),5).map(evLine).join('') || '<div class="mute">No activities planned yet.</div>'}</div></div>` : ''}
-    ${nextDest && ph !== 'completed' ? `<div class="card"><h3>Next destination</h3><b style="font-size:20px">${esc(nextDest.Name)}</b><div class="mute sm">${esc(nextDest.Country || '')}</div>
-       <div class="sm" style="margin-top:8px">${nextDest.ArrivalDate ? 'Arrive ' + esc(fmtDate(nextDest.ArrivalDate)) + ` · in ${Math.max(0,diffDays(today,nextDest.ArrivalDate))} days` : 'Arrival date not set'}</div>
-       ${nextDest.TransportNotes ? `<div class="sm mute" style="margin-top:6px">${esc(nextDest.TransportNotes)}</div>` : ''}<div class="row wrap" style="margin-top:10px">${linkBtn(nextDest.MapsUrl,'Map')}</div></div>` : ''}
-    <div class="card"><h3>Budget <button class="btn sm ghost" data-act="nav" data-page="budget">Details</button></h3>
-      ${B.budget ? `<div class="progress ${B.forecast > B.budget ? 'over' : ''}"><i style="width:${pct}%"></i><span class="mark" style="left:${spentPct}%"></span></div>` : '<div class="mute sm">Set a trip budget to see progress.</div>'}
-      <div class="kv" style="margin-top:12px"><div class="stat"><span class="xs mute">Budget</span><b>${B.budget ? aud(B.budget) : '–'}</b></div><div class="stat"><span class="xs mute">Forecast</span><b>${aud(B.forecast)}</b></div>
-        <div class="stat"><span class="xs mute">Spent</span><b>${aud(B.spent)}</b></div><div class="stat"><span class="xs mute">Remaining</span><b style="color:${B.remaining < 0 ? 'var(--bad)' : 'var(--good)'}">${B.budget ? aud(B.remaining) : '–'}</b></div></div></div>
-    <div class="card"><h3>Bookings <button class="btn sm ghost" data-act="nav" data-page="bookings">Open</button></h3>
-      <div class="kv"><div class="stat"><span class="xs mute">Confirmed</span><b style="color:var(--good)">${booked.length}</b></div><div class="stat"><span class="xs mute">Outstanding</span><b style="color:var(--warn)">${outstanding.length}</b></div></div>
-      <div class="list" style="margin-top:12px">${upBook.map(b => `<div class="row"><span style="flex:1"><b>${esc(b.Description)}</b><div class="xs mute">${esc(fmtShort(b.StartDate) || 'Date TBC')}${b.ConfirmationRef ? ' · ' + esc(b.ConfirmationRef) : ''}</div></span>${badge(b.Category)}</div>`).join('') || '<div class="mute sm">No upcoming reservations.</div>'}</div></div>
-    <div class="card"><h3>Preparation <button class="btn sm ghost" data-act="nav" data-page="tasks">Open</button></h3>
-      <div class="progress"><i style="width:${tasks.length ? done.length / tasks.length * 100 : 0}%"></i></div>
-      <div class="sm mute" style="margin:6px 0 10px">${done.length} done · ${open.length} outstanding</div>
-      <div class="list">${due.map(x => `<div class="row"><span style="flex:1">${esc(x.Description)}</span><span class="xs ${x.DueDate < today ? '' : 'mute'}" style="${x.DueDate < today ? 'color:var(--bad)' : ''}">${esc(fmtShort(x.DueDate))}</span></div>`).join('') || '<div class="mute sm">No deadlines set.</div>'}</div></div>
-    <div class="card"><h3>Destinations <button class="btn sm ghost" data-act="nav" data-page="destinations">Open</button></h3>
-      <div class="sm mute" style="margin-bottom:8px">${[...countries].map(esc).join(' · ') || 'No countries yet'}</div>
-      <div class="list">${ds.map(d => `<div class="row"><span style="flex:1"><b>${esc(d.Name)}</b> <span class="mute xs">${esc(d.Country)}</span></span><span class="xs mute">${nights(d) == null ? '' : nights(d) + (nights(d) === 1 ? ' night' : ' nights')}</span></div>`).join('') || '<div class="mute sm">Add your route under Destinations.</div>'}</div></div>
-    <div class="card"><h3>Important reminders</h3><div class="list">${rem.map(r => `<div class="row"><span class="badge ${r[0]}">!</span><span class="sm">${esc(r[1])}</span></div>`).join('') || '<div class="mute sm">All clear. Nothing needs attention.</div>'}</div></div>
-  </div>`;
+  <div class="strip">
+    <button class="sitem" data-act="nav" data-page="budget"><span class="xs mute">Budget</span><b>${B.budget ? aud(B.forecast) : aud(B.spent)}</b><span class="xs mute">${B.budget ? 'of ' + aud(B.budget) : 'spent so far'}</span>${B.budget ? '<div class="progress ' + over + '"><i style="width:' + pct + '%"></i></div>' : ''}</button>
+    <button class="sitem" data-act="nav" data-page="bookings"><span class="xs mute">Bookings</span><b>${booked.length}</b><span class="xs mute">confirmed${outstanding.length ? ' · ' + outstanding.length + ' to go' : ''}</span></button>
+    <button class="sitem" data-act="nav" data-page="tasks"><span class="xs mute">Preparation</span><b>${done.length}/${tasks.length}</b><span class="xs mute">tasks done</span>${tasks.length ? '<div class="progress"><i style="width:' + tpct + '%"></i></div>' : ''}</button>
+  </div>
+  ${ph !== 'completed' ? '<div class="card"><h3>' + (ph === 'underway' ? 'Today and next' : 'Up next') + '<button class="btn sm ghost" data-act="nav" data-page="itinerary">Itinerary</button></h3><div class="list">' + (up.map(evLine).join('') || '<div class="mute sm">Nothing planned yet.</div>') + '</div></div>' : ''}
+  ${rem.length ? '<div class="card" style="margin-top:12px"><h3>Needs attention</h3><div class="list">' + rem.slice(0,3).map(r => '<div class="sm">' + esc(r) + '</div>').join('') + '</div></div>' : ''}`;
 };
 
 PAGES.itinerary = function(){
